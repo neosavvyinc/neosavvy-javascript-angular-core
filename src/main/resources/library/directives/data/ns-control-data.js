@@ -10,12 +10,11 @@ Neosavvy
         return {
             restrict:'E',
             scope:{
+                src: "="
             },
-            compile:function (tElement, tAttrs) {
+            compile:function (tElement, tAttrs, transclude) {
                 var data;
-                if (tAttrs.src) {
-
-                } else if (tAttrs.injectSrc) {
+                if (!tAttrs.src && tAttrs.injectSrc) {
 
                 }
 
