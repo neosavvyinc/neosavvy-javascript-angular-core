@@ -1,7 +1,6 @@
 var Neosavvy = Neosavvy || {};
-Neosavvy.Directives = Neosavvy.Directives || {};
-
-Neosavvy.Directives.StatefulControl = function (options) {
+Neosavvy.TraitConstructors = Neosavvy.TraitConstructors || {};
+Neosavvy.TraitConstructors.StatefulControl = function (options) {
     if (options) {
         //Force component to use transclude
         options.transclude = 'element';
