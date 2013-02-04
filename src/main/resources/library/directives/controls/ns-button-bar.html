@@ -1,0 +1,7 @@
+<div class="ns-button-bar">
+    <ul ng-class="getListClass()">
+        <li ng-repeat="item in items">
+            <button ng-click="onClick(item)" ng-class="getStyleClass(item, $index)">{{ item[labelField] | toLabelFromConst }}</button>
+        </li>
+    </ul>
+</div>
