@@ -11,8 +11,6 @@ Neosavvy
             restrict:'E',
             scope:{
                 stateValue: "@",
-                stateObject: "=",
-                stateProperty: "@",
                 include: "@",
                 exclude: "@"
             },

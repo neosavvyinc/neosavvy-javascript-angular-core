@@ -10,7 +10,8 @@ Neosavvy
         return {
             restrict:'E',
             scope:{
-                src: "="
+                stateObject: "=",
+                stateProperty: "@"
             },
             compile:function (tElement, tAttrs, transclude) {
                 var data;
@@ -19,7 +20,7 @@ Neosavvy
                 }
 
                 return function (scope, element, attrs) {
-
+                    console.log("Linked");
                 };
             }
         }
