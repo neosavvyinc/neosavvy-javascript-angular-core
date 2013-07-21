@@ -1,13 +1,9 @@
-'use strict'
-
-//Made for use with the spinn.js library. http://fgnass.github.com/spin.js/ for reference.
-
-FilmBot.Directives
-    .directive('loadingOverlay', function () {
+Neosavvy.AngularCore.Directives
+    .directive('nsLoadingOverlay', function () {
         return {
             restrict:'E',
             replace:true,
-            templateUrl:'static/application/core/directives/loading-overlay-template.html',
+            templateUrl:'static/application/core/directives/ns-loading-overlay.html',
             scope:{
                 loading:"=loading"
             },
@@ -43,6 +39,6 @@ FilmBot.Directives
                         }
                     }
                 });
-            },
+            }
         }
     });

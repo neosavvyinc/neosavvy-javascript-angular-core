@@ -1,5 +1,3 @@
-'use strict'
-
 Neosavvy
     .Directives
     .directive('nsButtonBar', function () {
