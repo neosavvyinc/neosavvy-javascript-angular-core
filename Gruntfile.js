@@ -41,6 +41,16 @@ module.exports = function (grunt) {
                 files:'<%= jshint.lib_test.src %>',
                 tasks:['jshint:lib_test', 'qunit']
             }
+        },
+        karma:{
+            unit:{
+                configFile:'karma.conf.js'
+            },
+            build:{
+                configFile:'karma.conf.js',
+                singleRun:true,
+                browsers:['Chrome']
+            }
         }
     });
 
@@ -48,8 +58,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-karma');
 
     // Default task.
-    grunt.registerTask('default', ['concat', 'uglify']);
+    grunt.registerTask('default', ['karma:build', 'concat', 'uglify']);
 
 };
