@@ -14,7 +14,15 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'src/main/resources/**/*.js',
+            'src/main/resources/lib/lodash/lodash.js',
+            'src/main/resources/lib/zepto/zepto.js',
+            'src/main/resources/lib/zepto/compatibility/zepto-jquery-compatibility.js',
+            'src/main/resources/lib/angular/angular.js',
+            'src/test/resources/lib/**/*.js',
+            'src/main/resources/library/library.js',
+            'src/main/resources/library/directives/**/*.js',
+            'src/main/resources/library/filters/**/*.js',
+            'src/main/resources/library/services/**/*.js',
             'src/test/resources/**/*-spec.js'
         ],
 
