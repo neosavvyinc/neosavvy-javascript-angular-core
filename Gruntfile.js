@@ -51,6 +51,18 @@ module.exports = function (grunt) {
                 singleRun:true,
                 browsers:['Chrome']
             }
+        },
+        yuidoc: {
+            compile: {
+                name: '<%= pkg.name %>',
+                description: '<%= pkg.description %>',
+                version: '<%= pkg.version %>',
+                url: '<%= pkg.homepage %>',
+                options: {
+                    paths: 'src/main/resources/library/',
+                    outdir: 'docs/'
+                }
+            }
         }
     });
 
@@ -59,6 +71,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-contrib-yuidoc');
 
     // Default task.
     grunt.registerTask('default', ['karma:build', 'concat', 'uglify']);

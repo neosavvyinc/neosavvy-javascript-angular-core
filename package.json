@@ -1,23 +1,24 @@
 {
-    "name": "neosavvy-javascript-angular-core",
-    "version": "0.1.0",
-    "author": {
-        "name": "Neosavvy, Inc."
-    },
-    "devDependencies": {
-        "grunt": "~0.4.1",
-        "grunt-contrib-nodeunit": "~0.2.0",
-        "grunt-contrib-uglify": "~0.2.2",
-        "grunt-contrib-concat": "~0.3.0",
-        "grunt-contrib-watch": "~0.5.1",
-        "karma":"~0.10.1",
-        "grunt-karma":"~0.6.1",
-        "karma-jasmine":"*",
-        "karma-requirejs":"*",
-        "karma-coffee-preprocessor":"*",
-        "karma-chrome-launcher":"*",
-        "karma-firefox-launcher":"*",
-        "karma-phantomjs-launcher":"*",
-        "karma-script-launcher":"*"
-    }
+  "name": "neosavvy-javascript-angular-core",
+  "version": "0.1.0",
+  "author": {
+    "name": "Neosavvy, Inc."
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-nodeunit": "~0.2.0",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-watch": "~0.5.1",
+    "karma": "~0.10.1",
+    "grunt-karma": "~0.6.1",
+    "karma-jasmine": "*",
+    "karma-requirejs": "*",
+    "karma-coffee-preprocessor": "*",
+    "karma-chrome-launcher": "*",
+    "karma-firefox-launcher": "*",
+    "karma-phantomjs-launcher": "*",
+    "karma-script-launcher": "*",
+    "grunt-contrib-yuidoc": "~0.5.0"
+  }
 }
