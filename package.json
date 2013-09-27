@@ -18,6 +18,7 @@
     "karma-chrome-launcher": "*",
     "karma-firefox-launcher": "*",
     "karma-phantomjs-launcher": "*",
-    "karma-script-launcher": "*"
+    "karma-script-launcher": "*",
+    "grunt-ngdocs": "~0.1.7"
   }
 }

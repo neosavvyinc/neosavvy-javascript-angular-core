@@ -51,6 +51,9 @@ module.exports = function (grunt) {
                 singleRun:true,
                 browsers:['Chrome']
             }
+        },
+        ngdocs: {
+            all: ['src/main/resources/library/**/*.js']
         }
     });
 
@@ -59,6 +62,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-ngdocs');
 
     // Default task.
     grunt.registerTask('default', ['karma:build', 'concat', 'uglify']);
