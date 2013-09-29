@@ -68,9 +68,9 @@ Neosavvy.AngularCore.Services.factory('nsServiceExtensions',
                  * @description
                  * The standard $http request method helper with error handling, transformers, and added response handlers.
                  *
-                 * @param {Object} params
-                 * @param {Function} additionalSuccess
-                 * @param {function} additionalError
+                 * @param {Object} parameters all service parameters
+                 * @param {Function} additionalSuccess additional success method
+                 * @param {function} additionalError additonal error method
                  * @returns {Promise} $q promise object
                  */
                 request: function (params, additionalSuccess, additionalError) {
@@ -106,7 +106,7 @@ Neosavvy.AngularCore.Services.factory('nsServiceExtensions',
                  * @description
                  * The native XHR request method helper with error handling, transformers, and added response handlers.
                  *
-                 * @param {Object} params
+                 * @param {Object} params all service params
                  * @returns {Promise} Q promise object
                  */
                 xhr: function (params) {
