@@ -22,6 +22,8 @@
     "grunt-ngdocs": "~0.1.7",
     "karma-coverage": "~0.1.0",
     "grunt-nodemon": "~0.1.1",
-    "express": "~3.4.0"
+    "express": "~3.4.0",
+    "grunt-concurrent": "~0.4.0",
+    "grunt-open": "~0.2.2"
   }
 }
