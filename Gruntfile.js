@@ -23,6 +23,14 @@ module.exports = function (grunt) {
                 dest:'dist/<%= pkg.name %>.js'
             }
         },
+        bower:{
+            install:{
+                options:{
+                    targetDir:'<%= pkg.paths.libraries %>',
+                    cleanup:true
+                }
+            }
+        },
         uglify:{
             options:{
                 banner:'<%= banner %>'
@@ -59,23 +67,45 @@ module.exports = function (grunt) {
             dev: {
                 options: {
                     file: './web-server.js',
-                    args: ['3000'],
+                    args: ['3900'],
                     cwd: __dirname,
                     logConcurrentOutput: true
                 }            
             }
+        },
+        open : {
+            docs : {
+                path: 'http://127.0.0.1:3900/docs',
+                app: 'Google Chrome'
+            },
+            coverage : {
+                path: 'http://127.0.0.1:3900/coverage',
+                app: 'Google Chrome'
+            }
+        },
+        concurrent: {
+            dev: {
+                options: {
+                    logConcurrentOutput: true
+                },
+                tasks: ['nodemon', 'open']
+            }
         }
+
     });
 
     // These plugins provide necessary tasks.
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-ngdocs');
     grunt.loadNpmTasks('grunt-nodemon');
+    grunt.loadNpmTasks('grunt-open');
+    grunt.loadNpmTasks('grunt-concurrent');
 
     // Default task.
-    grunt.registerTask('default', ['karma:build', 'concat', 'uglify', 'ngdocs']);
+    grunt.registerTask('default', ['karma:build', 'concat', 'uglify', 'ngdocs', 'concurrent']);
 
 };

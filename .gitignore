@@ -5,3 +5,6 @@ dist
 .tern-port
 docs
 coverage
+bower_components
+src/main/resources/lib
+copy_to_bower.sh
