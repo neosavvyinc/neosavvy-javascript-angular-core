@@ -1,3 +1,17 @@
+/**
+ * @ngdoc object
+ * @name neosavvy.angularcore.services.services:nsServiceExtensions
+ * @requires $q, $http
+ * @description
+ * Helper methods for Angular JS oriented $http requests and native XHR requests.
+ *
+ * @example
+ * nsServiceExtensions.request({method: 'GET', url: 'http://www.neosavvy.com'});
+ * nsServiceExtensions.xhr({method: 'GET', url: 'http://www.neosavvy.com'});
+ *
+ * Both methods return a deferred.promise object (with then handlers). The only difference is that the nsServiceExtensions.request method is hooked into
+ * the standard angular lifecycle. The nsServiceExtensions.xhr method supports angular caching and transformers, but does not hook into the lifecyle.
+ */
 Neosavvy.AngularCore.Services.factory('nsServiceExtensions',
     ['$q', '$http',
         function ($q, $http) {
@@ -12,7 +26,7 @@ Neosavvy.AngularCore.Services.factory('nsServiceExtensions',
 
                 if (!headers) return parsed;
 
-                forEach(headers.split('\n'), function(line) {
+                forEach(headers.split('\n'), function (line) {
                     i = line.indexOf(':');
                     key = lowercase(trim(line.substr(0, i)));
                     val = trim(line.substr(i + 1));
@@ -46,6 +60,19 @@ Neosavvy.AngularCore.Services.factory('nsServiceExtensions',
             }
 
             return {
+                /**
+                 * @ngdoc method
+                 * @name neosavvy.angularcore.services.services:nsServiceExtensions#request
+                 * @methodOf neosavvy.angularcore.services.services:nsServiceExtensions
+                 *
+                 * @description
+                 * The standard $http request method helper with error handling, transformers, and added response handlers.
+                 *
+                 * @param {Object} params
+                 * @param {Function} additionalSuccess
+                 * @param {function} additionalError
+                 * @returns {Promise} $q promise object
+                 */
                 request: function (params, additionalSuccess, additionalError) {
                     if (!params.method) {
                         throw "You must provide a method for each service request.";
@@ -71,6 +98,17 @@ Neosavvy.AngularCore.Services.factory('nsServiceExtensions',
 
                     return deferred.promise;
                 },
+                /**
+                 * @ngdoc method
+                 * @name neosavvy.angularcore.services.services:nsServiceExtensions#xhr
+                 * @methodOf neosavvy.angularcore.services.services:nsServiceExtensions
+                 *
+                 * @description
+                 * The native XHR request method helper with error handling, transformers, and added response handlers.
+                 *
+                 * @param {Object} params
+                 * @returns {Promise} Q promise object
+                 */
                 xhr: function (params) {
                     if (!params.method) {
                         throw "You must provide a method for each service request.";
