@@ -20,6 +20,8 @@
     "karma-phantomjs-launcher": "*",
     "karma-script-launcher": "*",
     "grunt-ngdocs": "~0.1.7",
-    "karma-coverage": "~0.1.0"
+    "karma-coverage": "~0.1.0",
+    "grunt-nodemon": "~0.1.1",
+    "express": "~3.4.0"
   }
 }
