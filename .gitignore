@@ -1,5 +1,9 @@
 .idea
 node_modules
 dist
+*.swp
+.tern-port
+docs
+coverage
 bower_components
 src/main/resources/lib

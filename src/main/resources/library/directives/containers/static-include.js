@@ -1,3 +1,10 @@
+/**
+ * @ngdoc directive
+ * @name neosavvy.angularcore.directives.directive:nsStaticInclude
+ * @description test test test
+ * @restrict E
+ * @example
+ */
 Neosavvy.AngularCore.Directives
     .directive('nsStaticInclude',
     ['$http', '$templateCache', '$compile',

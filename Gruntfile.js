@@ -59,6 +59,19 @@ module.exports = function (grunt) {
                 singleRun:true,
                 browsers:['Chrome']
             }
+        },
+        ngdocs: {
+            all: ['src/main/resources/library/**/*.js']
+        },
+        nodemon: {
+            dev: {
+                options: {
+                    file: './web-server.js',
+                    args: ['3000'],
+                    cwd: __dirname,
+                    logConcurrentOutput: true
+                }            
+            }
         }
     });
 
@@ -68,8 +81,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-ngdocs');
+    grunt.loadNpmTasks('grunt-nodemon');
 
     // Default task.
-    grunt.registerTask('default', ['karma:build', 'concat', 'uglify']);
+    grunt.registerTask('default', ['karma:build', 'concat', 'uglify', 'ngdocs']);
 
 };
