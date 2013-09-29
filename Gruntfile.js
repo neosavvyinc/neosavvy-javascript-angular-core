@@ -65,6 +65,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-ngdocs');
 
     // Default task.
-    grunt.registerTask('default', ['karma:build', 'concat', 'uglify']);
+    grunt.registerTask('default', ['karma:build', 'concat', 'uglify', 'ngdocs']);
 
 };
