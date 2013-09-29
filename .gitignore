@@ -3,3 +3,5 @@ node_modules
 dist
 *.swp
 .tern-port
+docs
+coverage
