@@ -19,6 +19,7 @@
     "karma-firefox-launcher": "*",
     "karma-phantomjs-launcher": "*",
     "karma-script-launcher": "*",
-    "grunt-ngdocs": "~0.1.7"
+    "grunt-ngdocs": "~0.1.7",
+    "karma-coverage": "~0.1.0"
   }
 }
