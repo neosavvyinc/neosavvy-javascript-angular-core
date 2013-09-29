@@ -1,4 +1,4 @@
-ddescribe('nsInlineHtml directive', function () {
+describe('nsInlineHtml directive', function () {
 
     beforeEach(function() {
         module.apply(module, ['neosavvy.angularcore.directives']);
@@ -28,15 +28,17 @@ ddescribe('nsInlineHtml directive', function () {
         
             inject(function($compile, $rootScope) {
                 rootScope = $rootScope;
-                rootScope.myVal = replaceWith;
+                rootScope.val = replaceWith;
 
-                compiledElem = $compile('<ns-inline-html value="{{myVal}}"></ns-inline-html>')(rootScope);
-                rootScope.$apply();
+                rootScope.$apply(function() {
+                    compiledElem = $compile('<ns-inline-html value="{{val}}"></ns-inline-html>')(rootScope);
+                });
             });
         });
 
-        it('should replace the element with the expected text', function () {
-            expect(compiledElem).toEqual('TACOS');
+        xit('should replace the element with the expected text', function () {
+            console.log(compiledElem);
+            expect(compiledElem.find('div')).toEqual('TACOS');
         });
 
     });

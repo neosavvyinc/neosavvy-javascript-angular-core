@@ -10,13 +10,13 @@ Neosavvy.AngularCore.Directives
                     link:function (scope, element, attrs) {
 
                         if (!attrs.hasOwnProperty('value')) {
-                          throw "You must provide an html value on the scope in order to bind inline html!";
+                          throw 'You must provide an html value on the scope in order to bind inline html!';
                         }
                         
                         var dereg = attrs.$observe('value', function (val) {
                           if (val) {
-                            $compile(element.replaceWith(val))(scope);
-                            dereg();
+                              $compile(element.replaceWith(val))(scope);
+                              dereg();
                           }
                           
                         });
