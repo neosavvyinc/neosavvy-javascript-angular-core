@@ -24,5 +24,8 @@
     "karma-coverage": "~0.1.0",
     "grunt-nodemon": "~0.1.1",
     "express": "~3.4.0"
+  },
+  "paths" : {
+      "libraries": "src/main/resources/lib"
   }
 }
