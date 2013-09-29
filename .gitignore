@@ -4,3 +4,4 @@ dist
 *.swp
 .tern-port
 docs
+coverage
