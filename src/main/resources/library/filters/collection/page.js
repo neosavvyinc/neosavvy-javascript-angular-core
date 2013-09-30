@@ -5,6 +5,8 @@ Neosavvy.AngularCore.Filters.filter('nsCollectionPage', function () {
                 var start = page * count;
                 return collection.slice(start, Math.min(start + count, collection.length));
             }
+        } else {
+            collection = [];
         }
         return collection;
     };
