@@ -8,12 +8,12 @@ describe("nsCollectionFilterProperties", function () {
         })
     });
 
-    it("Should return undefined or null if the collection is", function () {
+    it("Should return undefined or null if the collection is undefined or null", function () {
         expect(filter(undefined)).toBeUndefined();
         expect(filter(null)).toBeNull();
     });
 
-    it("Should return an empty collection if the collection is", function () {
+    it("Should return an empty collection if the collection is an empty array", function () {
         expect(filter([])).toEqual([]);
     });
 
