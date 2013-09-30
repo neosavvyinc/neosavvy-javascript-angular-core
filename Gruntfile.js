@@ -22,6 +22,19 @@ module.exports = function (grunt) {
                     "echo 'Built from branch: ' `git rev-parse --abbrev-ref HEAD` >> src/main/resources/buildinfo.txt",
                     "cat src/main/resources/buildinfo.txt"
                 ].join("&&")
+            },
+            renameCoverage: {
+                options: {
+                    callback: function( err, stdout, stderr, cb) {
+                        console.log("Renaming Coverage Reports...");
+                        cb();
+                    }
+                },
+                command: [
+                    "cd target/coverage",
+                    "ls | sed -n 's/^Chrome.*/mv \"&\" Chrome/gp'  | sh"
+                ].join("&&")
+
             }
         },
 
@@ -126,7 +139,7 @@ module.exports = function (grunt) {
                 app: 'Google Chrome'
             },
             coverage : {
-                path: 'http://127.0.0.1:5900/coverage',
+                path: 'http://127.0.0.1:5900/coverage/Chrome',
                 app: 'Google Chrome'
             }
         },
@@ -182,7 +195,7 @@ module.exports = function (grunt) {
     /**
      * Phase 4 is to run tests against the pre-copied source and post-copied source
      */
-    grunt.registerTask('runTests', ['karma:build', 'ngdocs']);
+    grunt.registerTask('runTests', ['karma:build', 'ngdocs', 'shell:renameCoverage']);
 
     /**
      * Phase 5 is to deploy and start the application
