@@ -13,7 +13,7 @@ Neosavvy.AngularCore.Directives
                         } else {
                             var dereg = attrs.$observe('value', function (val) {
                               if (val) {
-                                  $compile(element.replaceWith(val))(scope);
+                                  var thing = $compile(element.replaceWith(val))(scope);
                                   dereg();
                               }
                               

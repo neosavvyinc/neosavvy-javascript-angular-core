@@ -1,4 +1,4 @@
-describe('nsInlineHtml directive', function () {
+ddescribe('nsInlineHtml directive', function () {
 
     beforeEach(function() {
         module.apply(module, ['neosavvy.angularcore.directives']);
@@ -36,9 +36,9 @@ describe('nsInlineHtml directive', function () {
             });
         });
 
-        xit('should replace the element with the expected text', function () {
-            console.log(compiledElem);
-            expect(compiledElem.find('div')).toEqual('TACOS');
+        it('should replace the element with the expected text', function () {
+            expect(compiledElem[0].attributes.class.value).toEqual('ng-scope');
+            expect(compiledElem[0].attributes.value.value).toEqual(replaceWith);
         });
 
     });
