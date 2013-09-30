@@ -40,6 +40,28 @@ describe("nsCollectionPage", function () {
             expect(page1[1]).toEqual(2);
             expect(page1[2]).toEqual(3);
 
+        });
+
+        it('Should return the last page of data in a 10 item set with 3 item pages', function() {
+            var items = [1,2,3,4,5,6,7,8,9,10];
+
+            var lastPage = filter( items, 3, 3);
+
+            expect(lastPage).toBeDefined();
+            expect(lastPage.length).toEqual(1);
+            expect(lastPage[0]).toEqual(10);
+
+        });
+
+        it('Should silently return no data when asking for a page that has no data', function() {
+
+            var items = [1,2,3,4,5,6,7,8,9,10];
+
+            var pageOutsideDataSet = filter( items, 4, 3);
+
+            expect(pageOutsideDataSet ).toBeDefined();
+            expect(pageOutsideDataSet.length).toEqual(0);
+
         })
 
     })
