@@ -1,6 +1,7 @@
 .idea
 node_modules
 dist
+target
 *.swp
 .tern-port
 docs
