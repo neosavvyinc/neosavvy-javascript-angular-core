@@ -1,3 +1,24 @@
+/**
+ * @ngdoc filter
+ * @name neosavvy.angularcore.filters:nsCollectionFilterPropertyContains
+ * @function
+ *
+ * @description
+ * This returns the intersection of collection and values based on property
+ * including deep properties
+ *
+ * Example of the inputs:
+ *   collection: [{name:'adam', value:1},{name:'trevor', value:2},{name:'chris',value:3}]
+ *   property: name
+ *   values: ['adam,'chris']
+ *
+ * Will return
+ *  [{name:'adam', value:1},{name:'chris',value:3}]
+ *
+ *
+ * @example
+ <input ng-model={{someCollection | nsCollectionFilterProperties:'propertyName':[val1,val2]}}/>
+ */
 Neosavvy.AngularCore.Filters.filter('nsCollectionFilterProperties', function () {
     return function (collection, property, values) {
         if (collection && values) {
