@@ -1,4 +1,4 @@
-ddescribe('nsInlineHtml directive', function () {
+describe('nsInlineHtml directive', function () {
 
     beforeEach(function() {
         module.apply(module, ['neosavvy.angularcore.directives']);
