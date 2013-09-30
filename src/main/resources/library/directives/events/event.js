@@ -7,7 +7,7 @@ Neosavvy.AngularCore.Directives
             var nsEvent = attrs.nsEvent.replace(/ /g, '').split(",");
             var bindFirst = (!_.isUndefined(attrs.nsEventHighPriority) ? true : false);
             if (nsEvent.length < 2) {
-                throw "Specify and event and handler in order to use the ns-event directive!";
+                throw "Specify an event and handler in order to use the ns-event directive!";
             }
 
             function matchKey(key) {
@@ -27,7 +27,9 @@ Neosavvy.AngularCore.Directives
             function handler(e) {
                 var myScope = findScope(scope, nsEvent[1]);
                 myScope.$event = e;
-                myScope.$apply(nsEvent[1]);
+                myScope.$apply(function() {
+                    myScope[nsEvent[1]]();
+                });
             }
 
             //Initialize event listeners
