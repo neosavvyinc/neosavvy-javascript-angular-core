@@ -14,11 +14,11 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'src/main/resources/lib/lodash/lodash.js',
+            'src/main/resources/lib/lodash/lodash.compat.js',
             'src/main/resources/lib/zepto/zepto.js',
-            'src/main/resources/lib/zepto/compatibility/zepto-jquery-compatibility.js',
+//            'src/main/resources/lib/zepto/compatibility/zepto-jquery-compatibility.js',
             'src/main/resources/lib/q/q.js',
-            'src/main/resources/lib/neosavvy/neosavvy-core.js',
+            'src/main/resources/lib/neosavvy-javascript-core/neosavvy-javascript-core.js',
             'src/main/resources/lib/angular/angular.js',
             'src/test/resources/lib/**/*.js',
             'src/main/resources/library/library.js',
