@@ -130,7 +130,7 @@ module.exports = function (grunt) {
                     ],
                     cwd: __dirname,
                     logConcurrentOutput: true
-                }            
+                }
             }
         },
         open : {

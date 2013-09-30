@@ -1,19 +1,21 @@
 {
     "name": "neosavvy-javascript-angular-core",
     "version": "0.0.1",
-    "homepage": "http://www.neosavvy.com",
     "authors": [
         "Neosavvy",
         "Inc."
     ],
-    "description": "The Neosavvy Angular JS Core Library",
+    "description": "The Neosavvy Angular JS core library.",
+    "main": "neosavvy-javascript-angular-core.js",
     "keywords": [
         "neosavvy",
-        "angular",
         "angularjs",
-        "turnkey"
+        "angular",
+        "html5"
     ],
     "license": "MIT",
+    "homepage": "http://www.neosavvy.com",
+    "private": true,
     "ignore": [
         "**/.*",
         "node_modules",
@@ -22,10 +24,10 @@
         "tests"
     ],
     "dependencies": {
+        "q": "~0.9.7",
+        "zepto": "~1.0.0",
         "angular": "~1.2.0-rc.2",
-        "lodash": "~2.1.0",
-        "neosavvy-javascript-core": "~0.0.1",
-        "q": "latest",
-        "zepto": "latest"
+        "angular-cache": "~1.2.0",
+        "neosavvy-javascript-core": "~0.0.1"
     }
 }

@@ -6,5 +6,6 @@ target
 .tern-port
 docs
 coverage
-
-src/main/resources/lib/
+bower_components
+src/main/resources/lib
+copy_to_bower.sh
