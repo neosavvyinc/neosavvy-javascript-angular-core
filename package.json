@@ -30,7 +30,8 @@
     "grunt-contrib-qunit": "~0.3.0",
     "grunt-contrib-jshint": "~0.6.4",
     "grunt-shell": "~0.4.0",
-    "grunt-bower-task": "~0.3.2"
+    "grunt-bower-task": "~0.3.2",
+    "http-proxy": "~0.10.3"
   },
   "paths": {
     "libraries": "src/main/resources/lib",

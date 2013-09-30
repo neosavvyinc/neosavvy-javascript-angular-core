@@ -69,7 +69,7 @@ module.exports = function (grunt) {
                 src:['src/main/resources/library/library.js',
                     'src/main/resources/library/directives/**/*.js',
                     'src/main/resources/library/services/**/*.js'],
-                dest:'dist/<%= pkg.name %>.js'
+                dest:'<%= pkg.paths.buildOutputDirectory %>/<%= pkg.name %>.js'
             }
         },
         uglify:{
@@ -78,7 +78,7 @@ module.exports = function (grunt) {
             },
             dist:{
                 src:'<%= concat.dist.dest %>',
-                dest:'dist/<%= pkg.name %>.min.js'
+                dest:'<%= pkg.paths.buildOutputDirectory %>/<%= pkg.name %>.min.js'
             }
         },
         watch:{
@@ -102,13 +102,19 @@ module.exports = function (grunt) {
             }
         },
         ngdocs: {
-            all: ['src/main/resources/library/**/*.js']
+            all: ['src/main/resources/library/**/*.js'],
+            options: {
+                dest: 'target/docs'
+            }
         },
         nodemon: {
             dev: {
                 options: {
                     file: './web-server.js',
-                    args: ['5900'],
+                    args: [
+                        '5900',
+                        __dirname + "/target/"
+                    ],
                     cwd: __dirname,
                     logConcurrentOutput: true
                 }            
@@ -176,7 +182,7 @@ module.exports = function (grunt) {
     /**
      * Phase 4 is to run tests against the pre-copied source and post-copied source
      */
-    grunt.registerTask('runTests', ['karma:unit']);
+    grunt.registerTask('runTests', ['karma:build', 'ngdocs']);
 
     /**
      * Phase 5 is to deploy and start the application

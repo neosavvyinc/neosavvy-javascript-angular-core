@@ -1,7 +1,10 @@
 .idea
 node_modules
 dist
+target
 *.swp
 .tern-port
 docs
 coverage
+
+src/main/resources/lib/
