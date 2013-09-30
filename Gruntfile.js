@@ -168,9 +168,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-open');
     grunt.loadNpmTasks('grunt-concurrent');
 
-    // Default task.
-//    grunt.registerTask('default', ['karma:build', 'concat', 'uglify', 'ngdocs', 'concurrent']);
-
     /**
      * We have some external dependencies in our build. This should ensure
      * both are on your machine before letting the build complete.
