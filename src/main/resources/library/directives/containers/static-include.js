@@ -39,7 +39,7 @@ Neosavvy.AngularCore.Directives
                         var replace = function (result) {
                             element.replaceWith($compile(angular.element(result.data))(scope));
                         };
-                        var dereg, request = function () {
+                        var dereg, request = function (val) {
                             $http.get(attrs.src, {cache:$templateCache}).then(replace);
                             if (dereg) {
                                 dereg();
@@ -47,7 +47,12 @@ Neosavvy.AngularCore.Directives
                         };
 
                         if (!_.isEmpty(watchWaitFor)) {
-                            dereg = scope.$watch(watchWaitFor, request);
+                            dereg = scope.$watch(watchWaitFor, function(val) {
+                                 if(angular.isDefined(val)) {
+                                      request();
+                                 }
+                                 
+                            });
                         }
                         else if (!_.isEmpty(waitFor) && parseFloat(waitFor) > 0) {
                             setTimeout(request, parseFloat(waitFor));
