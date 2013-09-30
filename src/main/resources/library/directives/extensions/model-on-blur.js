@@ -1,5 +1,5 @@
 Neosavvy.AngularCore.Directives
-    .directive('nsModelOnblur', function () {
+    .directive('nsModelOnBlur', function () {
         return {
             restrict:'A',
             require:'ngModel',
