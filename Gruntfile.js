@@ -59,10 +59,28 @@ module.exports = function (grunt) {
             dev: {
                 options: {
                     file: './web-server.js',
-                    args: ['3000'],
+                    args: ['5900'],
                     cwd: __dirname,
                     logConcurrentOutput: true
                 }            
+            }
+        },
+        open : {
+            docs : {
+                path: 'http://127.0.0.1:5900/docs',
+                app: 'Google Chrome'
+            },
+            coverage : {
+                path: 'http://127.0.0.1:5900/coverage',
+                app: 'Google Chrome'
+            }
+        },
+        concurrent: {
+            dev: {
+                options: {
+                    logConcurrentOutput: true
+                },
+                tasks: ['nodemon', 'open']
             }
         }
     });
@@ -74,8 +92,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-ngdocs');
     grunt.loadNpmTasks('grunt-nodemon');
+    grunt.loadNpmTasks('grunt-open');
+    grunt.loadNpmTasks('grunt-concurrent');
 
     // Default task.
-    grunt.registerTask('default', ['karma:build', 'concat', 'uglify', 'ngdocs']);
+    grunt.registerTask('default', ['karma:build', 'concat', 'uglify', 'ngdocs', 'concurrent']);
 
 };
