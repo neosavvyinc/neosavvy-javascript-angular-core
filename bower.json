@@ -1,9 +1,8 @@
 {
     "name": "neosavvy-javascript-angular-core",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "authors": [
-        "Neosavvy",
-        "Inc."
+        "Neosavvy, Inc."
     ],
     "description": "The Neosavvy Angular JS core library.",
     "main": "neosavvy-javascript-angular-core.js",
