@@ -17,39 +17,37 @@ Neosavvy.AngularCore.Services.factory('nsModal',
 
     var body = $document.find('body'),
         backdrop,
-        overlay;
+        overlay,
+        callback;
 
     function open (scope, templateUrl, closeCallback) {
 
-        if (!scope) {
+        if (!scope || typeof scope !== 'object') {
             throw 'missing scope parameter';
         }
 
-        if (!templateUrl) {
+        if (!templateUrl || typeof templateUrl !== 'string') {
             throw 'missing template parameter';
         }
 
-        backdrop = angular.element('<div ng-click="close()" class="modal-backdrop" style="background:rgba(10,10,10, 0.6); position:fixed; top:0px;right:0px;left:0px;bottom:0px;"></div>');
-        overlay = angular.element('<ng-include class="modal-overlay" src=" \'' + templateUrl + '\' "></ng-include>');
-        
-        $compile(backdrop)(scope);
-        $compile(overlay)(scope);
+        callback = closeCallback || undefined;
+
+        backdrop = $compile(angular.element('<div ng-click="close()" class="modal-backdrop" style="background:rgba(10,10,10, 0.6); position:fixed; top:0px;right:0px;left:0px;bottom:0px;"></div>'))(scope);
+        overlay = $compile(angular.element('<ng-include class="modal-overlay" src=" \'' + templateUrl + '\' "></ng-include>'))(scope);
 
         body.append(backdrop);
         body.append(overlay);
 
-        scope.close = function() {
-            backdrop.remove();
-            overlay.remove();
-
-            if (closeCallback === 'function')
-                closeCallback();
-        }
+        scope.close = close;
     }
 
     function close () {
         backdrop.remove();
         overlay.remove();     
+
+        if (typeof callback === 'function') {
+            callback();
+        }
     }
 
     return {
