@@ -1,6 +1,6 @@
 /**
  * @ngdoc filter
- * @name neosavvy.angularcore.filters:nsCollectionFilterPropertyContains
+ * @name neosavvy.angularcore.filters:nsCollectionFilterProperties
  * @function
  *
  * @description
@@ -19,6 +19,10 @@
  * @example
  * <pre>
  * <input ng-model={{someCollection | nsCollectionFilterProperties:'propertyName':[val1,val2]}}/>
+ * </pre>
+ *
+ * <pre>
+ * <input ng-model={{someCollection | nsCollectionFilterProperties:'deep.property.name':[val1,val2]}}/>
  * </pre>
  */
 Neosavvy.AngularCore.Filters.filter('nsCollectionFilterProperties', function () {
