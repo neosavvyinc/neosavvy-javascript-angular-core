@@ -1,14 +1,3 @@
-//.modal-overlay {
-//  position: absolute;
-//  background-color: white;
-//  left: 50%;
-//  top: 50%;
-//  width: 300px;
-//  height: 300px;
-//  margin-left: -150px;
-//  margin-top: -150px;
-//}
-
 /**
  * @ngdoc object
  * @name neosavvy.angularcore.services.services:nsModal
