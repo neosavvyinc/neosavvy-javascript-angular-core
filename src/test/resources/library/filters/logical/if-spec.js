@@ -1,4 +1,4 @@
-ddescribe("nsLogicalIf", function () {
+describe("nsLogicalIf", function () {
     var filter, $parse;
 
     beforeEach(function () {

@@ -5,7 +5,7 @@
  *
  * @description
  * This returns the intersection of collection and values based on property
- * including deep properties
+ * including deep properties.
  *
  * Example of the inputs:
  *   collection: [{name:'adam', value:1},{name:'trevor', value:2},{name:'chris',value:3}]
