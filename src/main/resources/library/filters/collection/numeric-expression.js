@@ -1,3 +1,25 @@
+/**
+ * @ngdoc filter
+ * @name neosavvy.angularcore.filters:nsCollectionNumericExpression
+ * @function
+ *
+ * @description
+ * Allows filtering for a collection based on the index of a propert and the numeric expression that corresponds to it.
+ *
+ * Example of the inputs:
+ *   data: [[{val: 1}, {val: 3}], [{val: 4}, {val: 5}], [{val: 1}, {val: 7}]]
+ *   expressionAndIndexes: ['', '> 4']
+ *   property: 'val'
+ *
+ * Will return
+ *  [[{val: 4}, {val: 5}], [{val: 1}, {val: 7}]]
+ *
+ *
+ * @example
+ * <pre>
+ * <input ng-model={{someCollection | nsCollectionNumericExpression : expressionsOnTheScope : 'name'}}/>
+ * </pre>
+ */
 Neosavvy.AngularCore.Filters.filter('nsCollectionNumericExpression', ['$parse', function ($parse) {
     return function (data, expressionsAndIndexes, property) {
         if (data && data.length) {
