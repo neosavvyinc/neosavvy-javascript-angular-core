@@ -1,0 +1,18 @@
+
+.modal-overlay {
+  position: absolute;
+  background-color: white;
+  padding: 15px;
+  border-radius: 15px;
+  left: 50%;
+  top: 50%;
+  width: 300px;
+  height: 300px;
+
+  // to center modal:
+  // margin-left should be -{1/2 * width}
+  // margin-top should be -{1/2 * height}
+  margin-left: -150px; 
+  margin-top: -150px;
+}
+
