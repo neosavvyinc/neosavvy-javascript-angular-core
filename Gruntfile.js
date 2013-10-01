@@ -80,8 +80,7 @@ module.exports = function (grunt) {
             },
             dist:{
                 src:['src/main/resources/library/library.js',
-                    'src/main/resources/library/directives/**/*.js',
-                    'src/main/resources/library/services/**/*.js'],
+                    'src/main/resources/library/**/*.js'],
                 dest:'<%= pkg.paths.buildOutputDirectory %>/<%= pkg.name %>.js'
             }
         },
