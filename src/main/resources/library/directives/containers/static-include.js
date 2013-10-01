@@ -1,9 +1,25 @@
 /**
  * @ngdoc directive
  * @name neosavvy.angularcore.directives.directive:nsStaticInclude
- * @description test test test
+ * @description A way to include an external template without creating new scopes, using demand loading, or on a timeout.
  * @restrict E
  * @example
+ *
+ * This will render out the template by making the request via http or $templateCache. It will completely replace the prior div, inline.
+ * <pre>
+ * <ns-static-include src="some/path/to/my/template.html"></ns-static-include>
+ * </pre>
+ *
+ * This will wait for 1000 ms before making the request and then completing the render cycle of the template.
+ * <pre>
+ * <ns-static-include src="some/path/to/my/template.html" wait-for="1000"></ns-static-include>
+ * </pre>
+ *
+ * This will wait till the someFlag property on scope is returning true in an if statement (true, 1, not null, not false).
+ * Like the wait-for property, it will wait to make the template call and render until the flag is flipped.
+ * <pre>
+ * <ns-static-include src="some/path/to/my/template.html" watch-wait-for="someFlag"></ns-static-include>
+ * </pre>
  */
 Neosavvy.AngularCore.Directives
     .directive('nsStaticInclude',
