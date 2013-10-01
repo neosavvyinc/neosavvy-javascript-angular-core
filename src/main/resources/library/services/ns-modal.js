@@ -2,18 +2,11 @@
  * @ngdoc object
  * @name neosavvy.angularcore.services.services:nsModal
  * @description
- * An angular service to generate a pop-up modal. Calling nsModal.open will open a modal
- * on the screen. nsModal.open accepts a config object with:
- * scope: the scope to use for the modal (required)
- * template: the template to include in the overlay (required)
- * closeCallback: a callback fired when the modal closes (optional)
- *
- * calling nsModal.close will close any modals currently on the screen
- *
+ * An angular service to generate modal pop-up.
  * @example
- * nsModal.open({ scope: $scope.$new(), template: 'templateUrl.html' }) => opens a modal with a new child scope
- * nsModal.open({ scope: $scope, template: 'templateUrl.html', closeCallback: myCallBackFn }) => opens a modal with an existing scope, myCallBackFn is fired when the modal closes
- * nsModal.close() => close the modal
+ *  nsModal.open($scope.$new(), 'templateUrl.html' }) => opens a modal with a new child scope
+ *  nsModal.open($scope, 'templateUrl.html', myCallBackFn }) => opens a modal with an existing scope, myCallBackFn is fired when the modal closes
+ *  nsModal.close() => close the modal
  *
  */
 Neosavvy.AngularCore.Services.factory('nsModal', 
@@ -26,16 +19,16 @@ Neosavvy.AngularCore.Services.factory('nsModal',
         backdrop,
         overlay;
 
-    function open (options) {
-        options = options || {};
+    function open (scope, templateUrl, closeCallback) {
 
-        var scope = options.scope;
+        if (!scope) {
+            throw 'missing scope parameter';
+        }
 
-        if (!options.template) {
+        if (!templateUrl) {
             throw 'missing template parameter';
         }
 
-        var templateUrl = options.template;
 
         backdrop = angular.element('<div ng-click="close()" class="modal-backdrop" style="background:rgba(10,10,10, 0.6); position:fixed; top:0px;right:0px;left:0px;bottom:0px;"></div>');
         overlay = angular.element('<ng-include class="modal-overlay" src=" \'' + templateUrl + '\' "></ng-include>');
@@ -51,8 +44,8 @@ Neosavvy.AngularCore.Services.factory('nsModal',
             backdrop.remove();
             overlay.remove();
 
-            if (typeof options.closeCallback === 'function')
-                options.closeCallback();
+            if (closeCallback === 'function')
+                closeCallback();
         }
     }
 
@@ -62,7 +55,30 @@ Neosavvy.AngularCore.Services.factory('nsModal',
     }
 
     return {
+
+        /**
+         * @ngdoc method
+         * @name neosavvy.angularcore.services.services:nsModal#open
+         * @methodOf neosavvy.angularcore.services.services:nsModal
+         *
+         * @description
+         * Calling nsModal.open will open a modal on the screen. 
+         *
+         * @param {Object} scope (required) the scope to use inside the modal. can pass in $scope.$new() for new child scope.
+         * @param {String} templateUrl (required) the location the template to include in the modal
+         * @param {Function} closeCallback (optional) a function call when the modal closes
+         */
         open: open,
+
+        /**
+         * @ngdoc method
+         * @name neosavvy.angularcore.services.services:nsModal#close
+         * @methodOf neosavvy.angularcore.services.services:nsModal
+         *
+         * @description
+         * Calling nsModal.close will close all open modals
+         *
+         */
         close: close
     }
 }]);
