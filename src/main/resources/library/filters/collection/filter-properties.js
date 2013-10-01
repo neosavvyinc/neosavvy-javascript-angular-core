@@ -17,7 +17,9 @@
  *
  *
  * @example
- <input ng-model={{someCollection | nsCollectionFilterProperties:'propertyName':[val1,val2]}}/>
+ * <pre>
+ * <input ng-model={{someCollection | nsCollectionFilterProperties:'propertyName':[val1,val2]}}/>
+ * </pre>
  */
 Neosavvy.AngularCore.Filters.filter('nsCollectionFilterProperties', function () {
     return function (collection, property, values) {
