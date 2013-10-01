@@ -15,12 +15,12 @@ module.exports = function(config) {
         // list of files / patterns to load in the browser
         files: [
             'src/main/resources/lib/lodash/lodash.compat.js',
-            'src/main/resources/lib/zepto/zepto.js',
+            'src/main/resources/lib/jquery/jquery.js',
             'src/main/resources/lib/q/q.js',
             'src/main/resources/lib/neosavvy-javascript-core/neosavvy-javascript-core.js',
             'src/main/resources/lib/angular/angular.js',
             'src/main/resources/lib/angular-*/*.js',
-            'src/main/resources/library/compatibility/zepto-jquery.js',
+            'src/main/resources/library/plugins/jquery/bind-first.js',
             'src/main/resources/library/library.js',
             'src/main/resources/library/directives/**/*.js',
             'src/main/resources/library/filters/**/*.js',

@@ -58,7 +58,7 @@ describe('nsEvent directives', function () {
 
             });
 
-            xit('should call bindFirst if high priority is specified', function () {
+            it('should call bindFirst if high priority is specified', function () {
 
                 spyOn(angular.element.prototype, 'bindFirst').andCallThrough();
 
@@ -101,9 +101,37 @@ describe('nsEvent directives', function () {
 
             });
 
+            it("Should be able to read a value off of a parent scope, in case it is not available on the current scope", function () {
+                var called = 0;
+                var myScope = rootScope.$new();
+                myScope.someHandlerOnParent = function() {
+                    called++;
+                };
+
+                var isolateScope = myScope.$new(true);
+                var compiled = compile(angular.element('<div ns-event="click, someHandlerOnParent"></div>'))(isolateScope);
+                isolateScope.$digest();
+
+                //Should call the function on the parent scope
+                expect(called).toEqual(0);
+                compiled.click();
+                isolateScope.$digest();
+                expect(called).toEqual(1);
+            });
+
+            it("Should throw an errow when the handler is not found on the scope chain", function () {
+                var compiled = compile(angular.element('<div ns-event="click, someNonExistentHandler"></div>'))(scope);
+                scope.$digest();
+
+                expect(function () {
+                    compiled.click();
+                    scope.$digest();
+                }).toThrow();
+            });
+
         });
 
-        xdescribe('nsEvent params > 2', function () {
+        describe('nsEvent params > 2', function () {
             var scope;
 
             beforeEach(function () {
@@ -130,6 +158,43 @@ describe('nsEvent directives', function () {
                 scope.$apply(function() {
                     compiledElem = compile(template)(scope);
                 });
+            });
+
+            it("Should be able to use a bindFirst with multiple elements", function () {
+                var called = 0;
+                var otherHandlerCalled = 0;
+                scope.handlerOnScope = function () {
+                    called++;
+                };
+                var handlerNotOnScope = function() {
+                    otherHandlerCalled++;
+                };
+                var template = '<div class="my-div" ns-event="click, handlerOnScope, i, .clickable-class" ns-event-high-priority="true">' +
+                    '<i></i>' +
+                    '<span class="clickable-class"></span>' +
+                    '<span class="other-class"></span>' +
+                    '</div>';
+                var compiled = compile(angular.element(template))(scope);
+
+                //Should not call when clicking actual element
+                expect(called).toEqual(0);
+                compiled.click
+                scope.$digest();
+                expect(called).toEqual(0);
+
+                //Should call when clicking <i>
+                compiled.find('i').click();
+                scope.$digest();
+                expect(called).toEqual(1);
+
+                //Should call when clicking .other-class
+                expect(called).toEqual(1);
+                compiled.find('.clickable-class').click();
+                expect(called).toEqual(2);
+
+                //Should not fire for the other-class child
+                compiled.find('.other-class').click();
+                expect(called).toEqual(2);
             });
         });
         

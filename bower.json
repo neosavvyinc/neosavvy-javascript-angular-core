@@ -25,7 +25,7 @@
     ],
     "dependencies": {
         "q": "~0.9.7",
-        "zepto": "~1.0.0",
+        "jquery": "~2.0.3",
         "angular": "~1.2.0-rc.2",
         "angular-cache": "~1.2.0",
         "neosavvy-javascript-core": "~0.0.1"

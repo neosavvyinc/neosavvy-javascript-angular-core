@@ -1,3 +1,27 @@
+/**
+ * @ngdoc directive
+ * @name neosavvy.angularcore.directives.directive:nsEvent
+ * @description A quick way to attach a handler for any jQuery/Zepto supported event to an element or some selection of its children.
+ * @restrict A
+ * @example
+ *
+ * This will fire the onBlur method on the scope (or parent scopes) whenever a blur event is fired.
+ * <pre>
+ * <input ns-event="blur, onBlur></input>
+ * </pre>
+ *
+ * In this case, only clicking the .header elements within the parent element will fire off the onClickHeader method.
+ * <pre>
+ * <p ns-event="click, onClickHeader, .header">
+ *      <span class="header></span>
+ *      <label>Some Content</label>
+ *      <label>Some Content</label>
+ *      <span class="header></span>
+ *      <label>Some Content</label>
+ *      <label>Some Content</label>
+ * </p>
+ * </pre>
+ */
 Neosavvy.AngularCore.Directives
     .directive('nsEvent', ['$rootScope', function ($rootScope) {
     return {
