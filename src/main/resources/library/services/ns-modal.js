@@ -29,10 +29,8 @@ Neosavvy.AngularCore.Services.factory('nsModal',
             throw 'missing template parameter';
         }
 
-
         backdrop = angular.element('<div ng-click="close()" class="modal-backdrop" style="background:rgba(10,10,10, 0.6); position:fixed; top:0px;right:0px;left:0px;bottom:0px;"></div>');
         overlay = angular.element('<ng-include class="modal-overlay" src=" \'' + templateUrl + '\' "></ng-include>');
-        
         
         $compile(backdrop)(scope);
         $compile(overlay)(scope);
