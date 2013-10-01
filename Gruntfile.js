@@ -187,7 +187,7 @@ module.exports = function (grunt) {
      * Phase 3 is to copy resources from source directories to the target
      * -
      */
-    grunt.registerTask('copyResources', ['shell:buildVersion']);
+    grunt.registerTask('copyResources', ['shell:buildVersion', 'concat', 'uglify']);
 
     /**
      * Phase 4 is to run tests against the pre-copied source and post-copied source
