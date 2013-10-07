@@ -31,7 +31,9 @@
                 var myControllers = controllers[injectedName];
                 if (myControllers && myControllers.length) {
                     for (var i = 0; i < myControllers.length; i++) {
-                        _applyTracking(myControllers[i].instance, methods, watches, listeners, log);
+                        //Watchers and listeners cannot be applied to a controller instance
+                        _applyTracking(myControllers[i].instance, methods, null, null, log);
+                        //Watchers and listeners can be applied to a controller scope
                         _applyTracking(myControllers[i].scope, methods, watches, listeners, log);
                     }
                 }
