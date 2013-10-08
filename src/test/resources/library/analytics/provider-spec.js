@@ -78,8 +78,11 @@ ddescribe("nsAnalyticsFactory", function () {
                 $scope.favoriteDirector = "Orson Wells";
                 $scope.industry = "Hollywood";
                 $scope.movies = {
-                    oldest: {name: "Citizen Kane", rating: "PG"}
+                    oldest: {name: "Citizen Kane", rating: "PG"},
+                    funniest: {name: "Groundhog Day"}
                 };
+                $scope.myTeam = "Orioles";
+                $scope.myCity = "Baltimore";
             }]);
     });
 
@@ -238,22 +241,40 @@ ddescribe("nsAnalyticsFactory", function () {
                 };
                 //Create the watching for the analytics
                 analyticsFactory('view.controllers.TestController', options, null, null, log);
-                expect(myScope.bRun).toEqual(0);
 
                 //Click in the dom
                 $('.b').click();
                 myScope.$digest();
-                expect(myScope.bRun).toEqual(1);
                 expect(log.length).toEqual(1);
                 expect(log).toContain(JSON.stringify({name: "Some Method B, with Citizen Kane!", options: {color: "b&w", rating: "PG" }}));
             });
 
             it("Should be able to pass them in a watcher", function () {
+                var options = {
+                    someWatchedProperty: {name: "Some Watched Property!", options: {team: "{{$scope.myTeam}}", city: "{{$scope.myCity}}"}}
+                };
+                analyticsFactory('view.controllers.TestController', null, options, null, log);
 
+                //Increment
+                myScope.someWatchedProperty++;
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some Watched Property!", options: {team: "Orioles", city: "Baltimore"}}));
             });
 
             it("Should be able to pass them in an event listener", function () {
+                var options = {
+                    'theEventOfTheCentury': {name: "My Event with {{$scope.movies.funniest.name}}!", options: {make: "Ford", model: "Explorer"}}
+                };
+                analyticsFactory('view.controllers.TestController', null, null, options, log);
 
+                //Broadcast
+                $rootScope.$broadcast("theEventOfTheCentury");
+                $rootScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "My Event with Groundhog Day!", options: {make: "Ford", model: "Explorer"}}));
             });
         });
 
