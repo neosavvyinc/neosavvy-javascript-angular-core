@@ -12,13 +12,15 @@ describe("nsAnalyticsFactory", function () {
             '</div>',
         el,
         log,
-        callBackSpy;
+        callBackSpy,
+        myNsAnalyticsFactoryProvider;
 
     beforeEach(function () {
         callBackSpy = jasmine.createSpyObj('callBackSpy', ['callBack1', 'callBack2', 'callBack3']);
         angular.module('testcontrollers', []).config([
             'nsAnalyticsFactoryProvider',
             function (nsAnalyticsFactoryProvider) {
+                myNsAnalyticsFactoryProvider = nsAnalyticsFactoryProvider;
                 //Should throw an error when provided a config that is undefined
                 expect(function () {
                     nsAnalyticsFactoryProvider.config(undefined);
@@ -616,6 +618,22 @@ describe("nsAnalyticsFactory", function () {
             expect(callBackSpy.callBack1).toHaveBeenCalledWith("Some R Method C!", {person: "Richard Nixon", industry: "Used Argument"});
             expect(callBackSpy.callBack2).toHaveBeenCalledWith("Some R Method C!", {person: "Richard Nixon", industry: "Used Argument"});
             expect(callBackSpy.callBack3).toHaveBeenCalledWith("Some R Method C!", {person: "Richard Nixon", industry: "Used Argument"});
+        });
+
+        it("Should be able to play nice with a single callBack defined in the config", function () {
+            var options = {
+                someMethodC: {name: "Some {{$scope.movies.oldest.rating}} Method C!", options: {person: "{{$controller.firstName}}", industry: "{{arguments[1]}}"}}
+            };
+            var mySpy = jasmine.createSpy();
+            myNsAnalyticsFactoryProvider.config({callBack: mySpy});
+            analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
+
+            myScope.someMethodC("Star Wars", "Star Trek");
+            myScope.$digest();
+
+            expect(log.length).toEqual(1);
+            expect(log).toContain(JSON.stringify({name: "Some PG Method C!", options: {person: "Mike Howard", industry: "Star Trek"}}));
+            expect(mySpy).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Star Trek"});
         });
     });
 

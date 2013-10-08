@@ -81,6 +81,16 @@
                 }
             }
 
+            function _chooseTrackingDelay(item, name, options, parentArguments, delay, log) {
+                if (delay <= 0) {
+                    _track(item, name, options, parentArguments, log);
+                } else {
+                    setTimeout(function () {
+                        _track(item, name, options, parentArguments, log);
+                    }, delay);
+                }
+            }
+
             function _applyMethodTracking(item, designation, methods, delay, log) {
                 if (item && methods) {
                     var particularItem = item[DESIGNATION_TO_PROPERTIES[designation]];
@@ -92,14 +102,7 @@
                                 var copy = angular.copy(particularItem[thing]);
                                 particularItem[thing] = function () {
                                     copy.apply(copy, arguments);
-                                    var parentArguments = arguments;
-                                    if (delay <= 0) {
-                                        _track(item, tracking.name, tracking.options, arguments, log);
-                                    } else {
-                                        setTimeout(function () {
-                                            _track(item, tracking.name, tracking.options, parentArguments, log);
-                                        }, delay);
-                                    }
+                                    _chooseTrackingDelay(item, tracking.name, tracking.options, arguments, delay, log);
                                 };
                             }
                         }
@@ -118,14 +121,7 @@
                                     var copy = watcher.fn;
                                     watcher.fn = function () {
                                         copy.apply(copy, arguments);
-                                        var parentArguments = arguments;
-                                        if (delay <= 0) {
-                                            _track(item, tracking.name, tracking.options, arguments, log);
-                                        } else {
-                                            setTimeout(function () {
-                                                _track(item, tracking.name, tracking.options, parentArguments, log);
-                                            }, delay);
-                                        }
+                                        _chooseTrackingDelay(item, tracking.name, tracking.options, arguments, delay, log);
                                     };
                                 }
                             });
@@ -145,14 +141,7 @@
                                     var copy = scope.$$listeners[eventStack][i];
                                     scope.$$listeners[eventStack][i] = function () {
                                         copy.apply(copy, arguments);
-                                        var parentArguments = arguments;
-                                        if (delay <= 0) {
-                                            _track(item, tracking.name, tracking.options, arguments, log);
-                                        } else {
-                                            setTimeout(function () {
-                                                _track(item, tracking.name, tracking.options, parentArguments, log);
-                                            }, delay);
-                                        }
+                                        _chooseTrackingDelay(item, tracking.name, tracking.options, arguments, delay, log);
                                     };
                                 }
                             }
