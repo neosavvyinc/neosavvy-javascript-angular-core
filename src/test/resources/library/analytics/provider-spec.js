@@ -15,13 +15,13 @@ ddescribe("nsAnalyticsFactory", function () {
         angular.module('testcontrollers', []).value('testValues', {
             vValue: 0
         });
-        angular.module('testcontrollers').factory('testManager', function() {
+        angular.module('testcontrollers').factory('testManager', function () {
             var aValue = 0;
             return {
-                incrementAValue: function() {
+                incrementAValue: function () {
                     aValue++;
                 },
-                getAValue: function() {
+                getAValue: function () {
                     return aValue;
                 }
             };
@@ -70,9 +70,16 @@ ddescribe("nsAnalyticsFactory", function () {
 
                 //Events
                 $scope.eventOfTheCenturyRun = 0;
-                $scope.$on("theEventOfTheCentury", function(e, data) {
+                $scope.$on("theEventOfTheCentury", function (e, data) {
                     $scope.eventOfTheCenturyRun++;
                 });
+
+                //Other random variables for testing
+                $scope.favoriteDirector = "Orson Wells";
+                $scope.industry = "Hollywood";
+                $scope.movies = {
+                    oldest: {name: "Citizen Kane", rating: "PG"}
+                };
             }]);
     });
 
@@ -207,13 +214,163 @@ ddescribe("nsAnalyticsFactory", function () {
             expect(log.length).toEqual(1);
             expect(log).toContain(JSON.stringify({name: "My Event!", options: {make: "Ford", model: "Explorer"}}));
         });
+
+        describe("$scope variables", function () {
+            it("Should be able to pass them in a $scope method", function () {
+                var options = {
+                    someMethodC: {name: "Some Method C!", options: {person: "{{$scope.favoriteDirector}}", industry: "{{$scope.industry}}"}}
+                };
+                analyticsFactory('view.controllers.TestController', options, null, null, log);
+
+                expect(myScope['ctrl'].cRun).toEqual(0);
+
+                //Click in the dom
+                $('.c').click();
+                myScope.$digest();
+                expect(myScope['ctrl'].cRun).toEqual(1);
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some Method C!", options: {person: "Orson Wells", industry: "Hollywood"}}));
+            });
+
+            it("Should be able to pass them in a controller method", function () {
+                var options = {
+                    someMethodB: {name: "Some Method B, with {{$scope.movies.oldest.name}}!", options: {color: "b&w", rating: "{{$scope.movies.oldest.rating}}" }}
+                };
+                //Create the watching for the analytics
+                analyticsFactory('view.controllers.TestController', options, null, null, log);
+                expect(myScope.bRun).toEqual(0);
+
+                //Click in the dom
+                $('.b').click();
+                myScope.$digest();
+                expect(myScope.bRun).toEqual(1);
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some Method B, with Citizen Kane!", options: {color: "b&w", rating: "PG" }}));
+            });
+
+            it("Should be able to pass them in a watcher", function () {
+
+            });
+
+            it("Should be able to pass them in an event listener", function () {
+
+            });
+        });
+
+        describe("controller variables", function () {
+            it("Should be able to pass them in a $scope method", function () {
+
+            });
+
+            it("Should be able to pass them in a controller method", function () {
+
+            });
+
+            it("Should be able to pass them in a watcher", function () {
+
+            });
+
+            it("Should be able to pass them in an event listener", function () {
+
+            });
+        });
+
+        describe("arguments", function () {
+            it("Should be able to pass them in a $scope method", function () {
+
+            });
+
+            it("Should be able to pass them in a controller method", function () {
+
+            });
+
+            it("Should be able to pass them in a watcher", function () {
+
+            });
+
+            it("Should be able to pass them in an event listener", function () {
+
+            });
+        });
+
+        describe("injected .value", function () {
+            it("Should be able to pass them in a $scope method", function () {
+
+            });
+
+            it("Should be able to pass them in a controller method", function () {
+
+            });
+
+            it("Should be able to pass them in a watcher", function () {
+
+            });
+
+            it("Should be able to pass them in an event listener", function () {
+
+            });
+        });
+
+        describe("injected .factory", function () {
+            it("Should be able to pass them in a $scope method", function () {
+
+            });
+
+            it("Should be able to pass them in a controller method", function () {
+
+            });
+
+            it("Should be able to pass them in a watcher", function () {
+
+            });
+
+            it("Should be able to pass them in an event listener", function () {
+
+            });
+        });
+
+        describe("combination", function () {
+            it("Should be able to pass them in a $scope method", function () {
+
+            });
+
+            it("Should be able to pass them in a controller method", function () {
+
+            });
+
+            it("Should be able to pass them in a watcher", function () {
+
+            });
+
+            it("Should be able to pass them in an event listener", function () {
+
+            });
+        });
+
+        it("Should support a delay for tracking events", function () {
+
+        });
     });
 
     describe("directives", function () {
-
+        //Will hold for a later release
     });
 
     describe("factories", function () {
+        //Will hold for a later release
+    });
 
+    describe("config", function () {
+        it("Should be able to define a single tracking method", function () {
+
+        });
+
+        it("Should be able to define two or more tracking methods", function () {
+
+        });
+
+        it("Should be able to set a default delay in the config", function () {
+
+        });
     });
 });

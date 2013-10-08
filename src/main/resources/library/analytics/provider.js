@@ -3,57 +3,102 @@
 
     function NsAnalyticsFactoryProvider() {
         this.$get = ['$injector', '$rootScope', function ($injector, $rootScope) {
+            var CONTROLLER_DESIGNATION = '$controller',
+                SCOPE_DESIGNATION = '$scope',
+                DESIGNATION_TO_PROPERTIES = {'$controller': 'instance', '$scope': 'scope'};
 
-            function _track(name, options, log) {
+            var _regexFromDesignation = memoize(function(designation) {
+                return new RegExp("{{" + designation.replace(/\$/g, "\\$") + "\..*}}", "g");
+            });
+
+            var _dRegexFromDesignation = memoize(function (designation) {
+                return new RegExp("(" + designation.replace(/\$/g, "\\$") + "\.|{{|}})", "g");
+            });
+
+            function _track(item, name, options, log) {
+                _.forEach(DESIGNATION_TO_PROPERTIES, function(val, key) {
+                    var re = _regexFromDesignation(key);
+                    var dre = _dRegexFromDesignation(key);
+
+                    //Name
+                    var match = String(name).match(re);
+                    if (match && match.length) {
+                        for (var i = 0; i < match.length; i++) {
+                            name = name.replace(re, Neosavvy.Core.Utils.MapUtils.get(item[val], match[i].replace(dre, "")));
+                        }
+                    }
+
+                    //Options
+                    _.forEach(options, function (subVal, subKey) {
+                        var match = String(subVal).match(re);
+                        if (match && match.length) {
+                            for (var i = 0; i < match.length; i++) {
+                                options[subKey] = String(subVal).replace(match[i], Neosavvy.Core.Utils.MapUtils.get(item[val], match[i].replace(dre, "")));
+                            }
+                        }
+                    });
+                });
+
+                //Tracking methods called here
+
                 if (log) {
                     log.push(JSON.stringify({name: name, options: options}));
                 }
             }
 
-            function _applyMethodTracking(item, methods, log) {
+            function _applyMethodTracking(item, designation, methods, log) {
                 if (item && methods) {
-                    //Methods
-                    for (var thing in item) {
-                        //Methods
-                        if (methods[thing] && typeof item[thing] === 'function' && thing !== 'constructor') {
-                            var tracking = methods[thing];
-                            var copy = angular.copy(item[thing]);
-                            item[thing] = function () {
-                                copy.apply(copy, arguments);
-                                _track(tracking.name, tracking.options, log);
-                            };
+                    var particularItem = item[DESIGNATION_TO_PROPERTIES[designation]];
+                    if (particularItem) {
+                        for (var thing in particularItem) {
+                            //Methods
+                            if (methods[thing] && typeof particularItem[thing] === 'function' && thing !== 'constructor') {
+                                var tracking = methods[thing];
+                                var copy = angular.copy(particularItem[thing]);
+                                particularItem[thing] = function () {
+                                    copy.apply(copy, arguments);
+                                    _track(item, tracking.name, tracking.options, log);
+                                };
+                            }
                         }
                     }
-
                 }
             }
 
-            function _applyWatcherTracking(scope, watches, log) {
-                if (scope && scope.$$watchers && scope.$$watchers.length && watches) {
-                    _.forEach(scope.$$watchers, function(watcher) {
-                        if (watches[watcher.exp]) {
-                            var tracking = watches[watcher.exp];
-                            var copy = watcher.fn;
-                            watcher.fn = function() {
-                                copy.apply(copy, arguments);
-                                _track(tracking.name, tracking.options, log);
-                            };
+            function _applyWatcherTracking(item, designation, watches, log) {
+                if (item && watches) {
+                    var scope = item[DESIGNATION_TO_PROPERTIES[designation]];
+                    if (scope) {
+                        if (scope && scope.$$watchers && scope.$$watchers.length) {
+                            _.forEach(scope.$$watchers, function (watcher) {
+                                if (watches[watcher.exp]) {
+                                    var tracking = watches[watcher.exp];
+                                    var copy = watcher.fn;
+                                    watcher.fn = function () {
+                                        copy.apply(copy, arguments);
+                                        _track(item, tracking.name, tracking.options, log);
+                                    };
+                                }
+                            });
                         }
-                    });
+                    }
                 }
             }
 
-            function _applyEventTracking(scope, listeners, log) {
-                if (scope && scope.$$listeners && listeners) {
-                    for (var eventStack in scope.$$listeners) {
-                        if (listeners[eventStack] && scope.$$listeners[eventStack].length) {
-                            var tracking = listeners[eventStack];
-                            for (var i = 0; i < scope.$$listeners[eventStack].length; i++) {
-                                var copy = scope.$$listeners[eventStack][i];
-                                scope.$$listeners[eventStack][i] = function() {
-                                    copy.apply(copy, arguments);
-                                    _track(tracking.name, tracking.options, log);
-                                };
+            function _applyEventTracking(item, designation, listeners, log) {
+                if (item && listeners) {
+                    var scope = item[DESIGNATION_TO_PROPERTIES[designation]];
+                    if (scope && scope.$$listeners) {
+                        for (var eventStack in scope.$$listeners) {
+                            if (listeners[eventStack] && scope.$$listeners[eventStack].length) {
+                                var tracking = listeners[eventStack];
+                                for (var i = 0; i < scope.$$listeners[eventStack].length; i++) {
+                                    var copy = scope.$$listeners[eventStack][i];
+                                    scope.$$listeners[eventStack][i] = function () {
+                                        copy.apply(copy, arguments);
+                                        _track(item, tracking.name, tracking.options, log);
+                                    };
+                                }
                             }
                         }
                     }
@@ -65,11 +110,11 @@
                 if (myControllers && myControllers.length) {
                     for (var i = 0; i < myControllers.length; i++) {
                         //Watchers and listeners cannot be applied to a controller instance
-                        _applyMethodTracking(myControllers[i].instance, methods, log);
+                        _applyMethodTracking(myControllers[i], CONTROLLER_DESIGNATION, methods, log);
                         //Watchers and listeners can be applied to a controller scope
-                        _applyMethodTracking(myControllers[i].scope, methods, log);
-                        _applyWatcherTracking(myControllers[i].scope, watches, log);
-                        _applyEventTracking(myControllers[i].scope, listeners, log);
+                        _applyMethodTracking(myControllers[i], SCOPE_DESIGNATION, methods, log);
+                        _applyWatcherTracking(myControllers[i], SCOPE_DESIGNATION, watches, log);
+                        _applyEventTracking(myControllers[i], SCOPE_DESIGNATION, listeners, log);
                     }
                 }
             }
