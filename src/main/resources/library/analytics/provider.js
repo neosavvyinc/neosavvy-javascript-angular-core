@@ -2,6 +2,7 @@
     var controllers = {};
 
     function NsAnalyticsFactoryProvider() {
+        var config = {delay: 1000};
         this.$get = ['$injector', '$rootScope', function ($injector, $rootScope) {
             var CONTROLLER_DESIGNATION = '$controller',
                 SCOPE_DESIGNATION = '$scope',
@@ -62,7 +63,7 @@
                 }
             }
 
-            function _applyMethodTracking(item, designation, methods, log) {
+            function _applyMethodTracking(item, designation, methods, delay, log) {
                 if (item && methods) {
                     var particularItem = item[DESIGNATION_TO_PROPERTIES[designation]];
                     if (particularItem) {
@@ -73,7 +74,14 @@
                                 var copy = angular.copy(particularItem[thing]);
                                 particularItem[thing] = function () {
                                     copy.apply(copy, arguments);
-                                    _track(item, tracking.name, tracking.options, arguments, log);
+                                    var parentArguments = arguments;
+                                    if (delay <= 0) {
+                                        _track(item, tracking.name, tracking.options, arguments, log);
+                                    } else {
+                                        setTimeout(function() {
+                                            _track(item, tracking.name, tracking.options, parentArguments, log);
+                                        }, delay);
+                                    }
                                 };
                             }
                         }
@@ -81,7 +89,7 @@
                 }
             }
 
-            function _applyWatcherTracking(item, designation, watches, log) {
+            function _applyWatcherTracking(item, designation, watches, delay, log) {
                 if (item && watches) {
                     var scope = item[DESIGNATION_TO_PROPERTIES[designation]];
                     if (scope) {
@@ -92,7 +100,14 @@
                                     var copy = watcher.fn;
                                     watcher.fn = function () {
                                         copy.apply(copy, arguments);
-                                        _track(item, tracking.name, tracking.options, arguments, log);
+                                        var parentArguments = arguments;
+                                        if (delay <= 0) {
+                                            _track(item, tracking.name, tracking.options, arguments, log);
+                                        } else {
+                                            setTimeout(function() {
+                                                _track(item, tracking.name, tracking.options, parentArguments, log);
+                                            }, delay);
+                                        }
                                     };
                                 }
                             });
@@ -101,7 +116,7 @@
                 }
             }
 
-            function _applyEventTracking(item, designation, listeners, log) {
+            function _applyEventTracking(item, designation, listeners, delay, log) {
                 if (item && listeners) {
                     var scope = item[DESIGNATION_TO_PROPERTIES[designation]];
                     if (scope && scope.$$listeners) {
@@ -112,7 +127,14 @@
                                     var copy = scope.$$listeners[eventStack][i];
                                     scope.$$listeners[eventStack][i] = function () {
                                         copy.apply(copy, arguments);
-                                        _track(item, tracking.name, tracking.options, arguments, log);
+                                        var parentArguments = arguments;
+                                        if (delay <= 0) {
+                                            _track(item, tracking.name, tracking.options, arguments, log);
+                                        } else {
+                                            setTimeout(function() {
+                                                _track(item, tracking.name, tracking.options, parentArguments, log);
+                                            }, delay);
+                                        }
                                     };
                                 }
                             }
@@ -121,16 +143,17 @@
                 }
             }
 
-            function nsAnalyticsFactory(injectedName, methods, watches, listeners, log) {
+            function nsAnalyticsFactory(injectedName, methods, watches, listeners, delay, log) {
                 var myControllers = controllers[injectedName];
+                delay = delay || delay === 0 ? delay : config.delay;
                 if (myControllers && myControllers.length) {
                     for (var i = 0; i < myControllers.length; i++) {
                         //Watchers and listeners cannot be applied to a controller instance
-                        _applyMethodTracking(myControllers[i], CONTROLLER_DESIGNATION, methods, log);
+                        _applyMethodTracking(myControllers[i], CONTROLLER_DESIGNATION, methods, delay, log);
                         //Watchers and listeners can be applied to a controller scope
-                        _applyMethodTracking(myControllers[i], SCOPE_DESIGNATION, methods, log);
-                        _applyWatcherTracking(myControllers[i], SCOPE_DESIGNATION, watches, log);
-                        _applyEventTracking(myControllers[i], SCOPE_DESIGNATION, listeners, log);
+                        _applyMethodTracking(myControllers[i], SCOPE_DESIGNATION, methods, delay, log);
+                        _applyWatcherTracking(myControllers[i], SCOPE_DESIGNATION, watches, delay, log);
+                        _applyEventTracking(myControllers[i], SCOPE_DESIGNATION, listeners, delay, log);
                     }
                 }
             }

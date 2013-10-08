@@ -13,7 +13,10 @@ ddescribe("nsAnalyticsFactory", function () {
 
     beforeEach(function () {
         angular.module('testcontrollers', []).value('testValues', {
-            vValue: 0
+            vValue: 0,
+            staticValue: {
+                name: "Something Static"
+            }
         });
         angular.module('testcontrollers').factory('testManager', function () {
             var aValue = 0;
@@ -114,7 +117,7 @@ ddescribe("nsAnalyticsFactory", function () {
         $('body').empty();
     });
 
-    ddescribe("controllers", function () {
+    describe("controllers", function () {
         var myScope;
         beforeEach(function () {
             //Because it is applied to the directive, it is the first child scope
@@ -126,7 +129,7 @@ ddescribe("nsAnalyticsFactory", function () {
                 someMethodB: {name: "Some Method B!", options: {age: 55, color: "Green"}}
             };
             //Create the watching for the analytics
-            analyticsFactory('view.controllers.TestController', options, null, null, log);
+            analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
             expect(myScope.bRun).toEqual(0);
 
             //Click in the dom
@@ -141,7 +144,7 @@ ddescribe("nsAnalyticsFactory", function () {
             var options = {
                 someMethodC: {name: "Some Method C!", options: {age: 85, color: "Yellow"}}
             };
-            analyticsFactory('view.controllers.TestController', options, null, null, log);
+            analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
 
             expect(myScope['ctrl'].cRun).toEqual(0);
 
@@ -157,7 +160,7 @@ ddescribe("nsAnalyticsFactory", function () {
             var options = {
                 someWatchedProperty: {name: "Some Watched Property!", options: {team: "Cubs", city: "St. Louis"}}
             };
-            analyticsFactory('view.controllers.TestController', null, options, null, log);
+            analyticsFactory('view.controllers.TestController', null, options, null, 0, log);
 
             expect(myScope.someWatchedProperty).toEqual(0);
             expect(myScope.someWatchedPropertyWatcherRun).toEqual(1);
@@ -176,7 +179,7 @@ ddescribe("nsAnalyticsFactory", function () {
             var options = {
                 'testValues.vValue': {name: "The object, with the property", options: {team: "Bucks", city: "Milwaukee"}}
             };
-            analyticsFactory('view.controllers.TestController', null, options, null, log);
+            analyticsFactory('view.controllers.TestController', null, options, null, 0, log);
 
             expect(myScope.testValues.vValue).toEqual(0);
             expect(myScope.testValuesRun).toEqual(1);
@@ -195,7 +198,7 @@ ddescribe("nsAnalyticsFactory", function () {
             var options = {
                 'testManager.getAValue()': {name: "Some value getter", options: {team: "Astros", city: "Dallas"}}
             };
-            analyticsFactory('view.controllers.TestController', null, options, null, log);
+            analyticsFactory('view.controllers.TestController', null, options, null, 0, log);
 
             expect(myScope.testManager.getAValue()).toEqual(0);
             expect(myScope.managerWatchRun).toEqual(1);
@@ -213,7 +216,7 @@ ddescribe("nsAnalyticsFactory", function () {
             var options = {
                 'theEventOfTheCentury': {name: "My Event!", options: {make: "Ford", model: "Explorer"}}
             };
-            analyticsFactory('view.controllers.TestController', null, null, options, log);
+            analyticsFactory('view.controllers.TestController', null, null, options, 0, log);
 
             expect(myScope.eventOfTheCenturyRun).toEqual(0);
 
@@ -231,7 +234,7 @@ ddescribe("nsAnalyticsFactory", function () {
                 var options = {
                     someMethodC: {name: "Some Method C!", options: {person: "{{$scope.favoriteDirector}}", industry: "{{$scope.industry}}"}}
                 };
-                analyticsFactory('view.controllers.TestController', options, null, null, log);
+                analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
 
                 expect(myScope['ctrl'].cRun).toEqual(0);
 
@@ -248,7 +251,7 @@ ddescribe("nsAnalyticsFactory", function () {
                     someMethodB: {name: "Some Method B, with {{$scope.movies.oldest.name}}!", options: {color: "b&w", rating: "{{$scope.movies.oldest.rating}}" }}
                 };
                 //Create the watching for the analytics
-                analyticsFactory('view.controllers.TestController', options, null, null, log);
+                analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
 
                 //Click in the dom
                 $('.b').click();
@@ -261,7 +264,7 @@ ddescribe("nsAnalyticsFactory", function () {
                 var options = {
                     someWatchedProperty: {name: "Some Watched Property!", options: {team: "{{$scope.myTeam}}", city: "{{$scope.myCity}}"}}
                 };
-                analyticsFactory('view.controllers.TestController', null, options, null, log);
+                analyticsFactory('view.controllers.TestController', null, options, null, 0, log);
 
                 //Increment
                 myScope.someWatchedProperty++;
@@ -275,7 +278,7 @@ ddescribe("nsAnalyticsFactory", function () {
                 var options = {
                     'theEventOfTheCentury': {name: "My Event with {{$scope.movies.funniest.name}}!", options: {make: "Ford", model: "Explorer"}}
                 };
-                analyticsFactory('view.controllers.TestController', null, null, options, log);
+                analyticsFactory('view.controllers.TestController', null, null, options, 0, log);
 
                 //Broadcast
                 $rootScope.$broadcast("theEventOfTheCentury");
@@ -291,7 +294,7 @@ ddescribe("nsAnalyticsFactory", function () {
                 var options = {
                     someMethodC: {name: "Some {{$controller.title}} Method C!", options: {person: "{{$controller.firstName}}", industry: "{{$controller.office}}"}}
                 };
-                analyticsFactory('view.controllers.TestController', options, null, null, log);
+                analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
 
                 //Click in the dom
                 $('.c').click();
@@ -306,7 +309,7 @@ ddescribe("nsAnalyticsFactory", function () {
                     someMethodB: {name: "Some Method B, with {{$controller.firstName}}!", options: {color: "b&w", rating: "{{$controller.countries.home}}" }}
                 };
                 //Create the watching for the analytics
-                analyticsFactory('view.controllers.TestController', options, null, null, log);
+                analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
 
                 //Click in the dom
                 $('.b').click();
@@ -320,7 +323,7 @@ ddescribe("nsAnalyticsFactory", function () {
                 var options = {
                     someWatchedProperty: {name: "Some Watched Property!", options: {team: "{{$controller.office}}", city: "{{$controller.firstName}}"}}
                 };
-                analyticsFactory('view.controllers.TestController', null, options, null, log);
+                analyticsFactory('view.controllers.TestController', null, options, null, 0, log);
 
                 //Increment
                 myScope.someWatchedProperty++;
@@ -334,7 +337,7 @@ ddescribe("nsAnalyticsFactory", function () {
                 var options = {
                     'theEventOfTheCentury': {name: "My Event with {{$controller.countries.away}}!", options: {make: "Ford", model: "Explorer"}}
                 };
-                analyticsFactory('view.controllers.TestController', null, null, options, log);
+                analyticsFactory('view.controllers.TestController', null, null, options, 0, log);
 
                 //Broadcast
                 $rootScope.$broadcast("theEventOfTheCentury");
@@ -350,7 +353,7 @@ ddescribe("nsAnalyticsFactory", function () {
                 var options = {
                     someMethodC: {name: "Some {{arguments[0]}} Method C!", options: {person: "This Dude", industry: "{{arguments[1]}}"}}
                 };
-                analyticsFactory('view.controllers.TestController', options, null, null, log);
+                analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
 
                 //Click in the dom
                 myScope.someMethodC(555, "Leeeroy Jenkins!");
@@ -361,21 +364,65 @@ ddescribe("nsAnalyticsFactory", function () {
             });
 
             it("Should be able to pass them in a controller method", function () {
+                var options = {
+                    someMethodB: {name: "Some Method B, with {{arguments[2]}}!", options: {color: "b&w", rating: "{{arguments[3]}}" }}
+                };
+                //Create the watching for the analytics
+                analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
 
+                //Click in the dom
+                myScope['ctrl'].someMethodB("schwan", "doo", "two and heif", "scheven");
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some Method B, with two and heif!", options: {color: "b&w", rating: "scheven" }}));
             });
 
             it("Should be able to pass them in a watcher", function () {
+                var options = {
+                    someWatchedProperty: {name: "Some {{arguments[0]}} Property!", options: {team: "{{arguments[1]}} do something", city: "Boise"}}
+                };
+                analyticsFactory('view.controllers.TestController', null, options, null, 0, log);
 
+                //Increment
+                myScope.someWatchedProperty++;
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+
+                //Exhibits newValue and oldValue
+                expect(log).toContain(JSON.stringify({name: "Some 1 Property!", options: {team: "0 do something", city: "Boise"}}));
             });
 
             it("Should be able to pass them in an event listener", function () {
+                var options = {
+                    'theEventOfTheCentury': {name: "My Event with {{arguments[1]}}!", options: {make: "{{arguments[1]}}", model: "Explorer"}}
+                };
+                analyticsFactory('view.controllers.TestController', null, null, options, 0, log);
 
+                //Broadcast
+                $rootScope.$broadcast("theEventOfTheCentury", "someOtherString");
+                $rootScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "My Event with someOtherString!", options: {make: "someOtherString", model: "Explorer"}}));
             });
         });
 
-        describe("injected .value", function () {
+        xdescribe("injected .value", function () {
+            //Going to support this in a later release
             it("Should be able to pass them in a $scope method", function () {
+                var options = {
+                    someMethodC: {name: "Some {{testValues#vValue}} Method C!", options: {person: "Mr. {{testValues#staticValue.name}}", industry: "Sports"}}
+                };
+                analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
 
+                //Click in the dom
+                myScope.someMethodC();
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some 1 Method C!", options: {person: "Mr. Something Static", industry: "Sports"}}));
             });
 
             it("Should be able to pass them in a controller method", function () {
@@ -391,7 +438,8 @@ ddescribe("nsAnalyticsFactory", function () {
             });
         });
 
-        describe("injected .factory", function () {
+        xdescribe("injected .factory", function () {
+            //Going to support this in a later release
             it("Should be able to pass them in a $scope method", function () {
 
             });
@@ -411,24 +459,83 @@ ddescribe("nsAnalyticsFactory", function () {
 
         describe("combination", function () {
             it("Should be able to pass them in a $scope method", function () {
+                var options = {
+                    someMethodC: {name: "Some {{$scope.movies.oldest.rating}} Method C!", options: {person: "{{$controller.firstName}}", industry: "{{arguments[1]}}"}}
+                };
+                analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
 
+                //Click in the dom
+                myScope.someMethodC(555, "Leeeroy Jenkins!");
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some PG Method C!", options: {person: "Mike Howard", industry: "Leeeroy Jenkins!"}}));
             });
 
             it("Should be able to pass them in a controller method", function () {
+                var options = {
+                    someMethodB: {name: "Some {{$scope.myTeam}} B, with {{arguments[3]}}!", options: {color: "b&w", rating: "{{$controller.countries.away}}" }}
+                };
+                //Create the watching for the analytics
+                analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
 
+                //Click in the dom
+                myScope['ctrl'].someMethodB("schwan", "doo", "two and heif", "scheven");
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some Orioles B, with scheven!", options: {color: "b&w", rating: "Denmark" }}));
             });
 
             it("Should be able to pass them in a watcher", function () {
+                var options = {
+                    someWatchedProperty: {name: "Some {{arguments[1]}} Property!", options: {team: "{{$controller.office}}", city: "The town of {{$scope.favoriteDirector}}"}}
+                };
+                analyticsFactory('view.controllers.TestController', null, options, null, 0, log);
 
+                //Increment
+                myScope.someWatchedProperty++;
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+
+                //Exhibits newValue and oldValue
+                expect(log).toContain(JSON.stringify({name: "Some 0 Property!", options: {team: "Office Depot", city: "The town of Orson Wells"}}));
             });
 
             it("Should be able to pass them in an event listener", function () {
+                var options = {
+                    'theEventOfTheCentury': {name: "My {{$scope.industry}} with {{$controller.countries.home}}!", options: {make: "{{arguments[1]}}", model: "Explorer"}}
+                };
+                analyticsFactory('view.controllers.TestController', null, null, options, 0, log);
 
+                //Broadcast
+                $rootScope.$broadcast("theEventOfTheCentury", "LEEROY JENKINS MF!");
+                $rootScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "My Hollywood with US!", options: {make: "LEEROY JENKINS MF!", model: "Explorer"}}));
             });
         });
 
         it("Should support a delay for tracking events", function () {
+            var options = {
+                someMethodC: {name: "Some {{$scope.movies.oldest.rating}} Method C!", options: {person: "{{$controller.firstName}}", industry: "{{arguments[1]}}"}}
+            };
+            analyticsFactory('view.controllers.TestController', options, null, null, 1000, log);
 
+            //Click in the dom
+            runs(function() {
+                myScope.someMethodC(555, "Leeeroy Jenkins!");
+                myScope.$digest();
+            });
+
+            waits(2000);
+
+            runs(function() {
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some PG Method C!", options: {person: "Mike Howard", industry: "Leeeroy Jenkins!"}}));
+            });
         });
     });
 
