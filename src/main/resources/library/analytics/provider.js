@@ -5,15 +5,16 @@
         this.$get = ['$injector', '$rootScope', function ($injector, $rootScope) {
 
             function _track(name, options, log) {
-                console.log("Tracking event " + name + " called!");
                 if (log) {
                     log.push(JSON.stringify({name: name, options: options}));
                 }
             }
 
-            function _applyTracking(item, methods, watches, listeners, log) {
-                if (item) {
+            function _applyMethodTracking(item, methods, log) {
+                if (item && methods) {
+                    //Methods
                     for (var thing in item) {
+                        //Methods
                         if (methods[thing] && typeof item[thing] === 'function' && thing !== 'constructor') {
                             var tracking = methods[thing];
                             var copy = angular.copy(item[thing]);
@@ -21,7 +22,39 @@
                                 copy.apply(copy, arguments);
                                 _track(tracking.name, tracking.options, log);
                             };
-                            console.log("AFTER METHOD " + item[thing]);
+                        }
+                    }
+
+                }
+            }
+
+            function _applyWatcherTracking(scope, watches, log) {
+                if (scope && scope.$$watchers && scope.$$watchers.length && watches) {
+                    _.forEach(scope.$$watchers, function(watcher) {
+                        if (watches[watcher.exp]) {
+                            var tracking = watches[watcher.exp];
+                            var copy = watcher.fn;
+                            watcher.fn = function() {
+                                copy.apply(copy, arguments);
+                                _track(tracking.name, tracking.options, log);
+                            };
+                        }
+                    });
+                }
+            }
+
+            function _applyEventTracking(scope, listeners, log) {
+                if (scope && scope.$$listeners && listeners) {
+                    for (var eventStack in scope.$$listeners) {
+                        if (listeners[eventStack] && scope.$$listeners[eventStack].length) {
+                            var tracking = listeners[eventStack];
+                            for (var i = 0; i < scope.$$listeners[eventStack].length; i++) {
+                                var copy = scope.$$listeners[eventStack][i];
+                                scope.$$listeners[eventStack][i] = function() {
+                                    copy.apply(copy, arguments);
+                                    _track(tracking.name, tracking.options, log);
+                                };
+                            }
                         }
                     }
                 }
@@ -32,9 +65,11 @@
                 if (myControllers && myControllers.length) {
                     for (var i = 0; i < myControllers.length; i++) {
                         //Watchers and listeners cannot be applied to a controller instance
-                        _applyTracking(myControllers[i].instance, methods, null, null, log);
+                        _applyMethodTracking(myControllers[i].instance, methods, log);
                         //Watchers and listeners can be applied to a controller scope
-                        _applyTracking(myControllers[i].scope, methods, watches, listeners, log);
+                        _applyMethodTracking(myControllers[i].scope, methods, log);
+                        _applyWatcherTracking(myControllers[i].scope, watches, log);
+                        _applyEventTracking(myControllers[i].scope, listeners, log);
                     }
                 }
             }
