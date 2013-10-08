@@ -75,6 +75,14 @@ ddescribe("nsAnalyticsFactory", function () {
                 });
 
                 //Other random variables for testing
+                this.firstName = "Mike Howard";
+                this.office = "Office Depot";
+                this.title = "Doctor";
+                this.countries = {
+                    home: "US",
+                    away: "Denmark"
+                };
+
                 $scope.favoriteDirector = "Orson Wells";
                 $scope.industry = "Hollywood";
                 $scope.movies = {
@@ -278,21 +286,62 @@ ddescribe("nsAnalyticsFactory", function () {
             });
         });
 
-        describe("controller variables", function () {
+        describe("$controller variables", function () {
             it("Should be able to pass them in a $scope method", function () {
+                var options = {
+                    someMethodC: {name: "Some {{$controller.title}} Method C!", options: {person: "{{$controller.firstName}}", industry: "{{$controller.office}}"}}
+                };
+                analyticsFactory('view.controllers.TestController', options, null, null, log);
 
+                //Click in the dom
+                $('.c').click();
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some Doctor Method C!", options: {person: "Mike Howard", industry: "Office Depot"}}));
             });
 
             it("Should be able to pass them in a controller method", function () {
+                var options = {
+                    someMethodB: {name: "Some Method B, with {{$controller.firstName}}!", options: {color: "b&w", rating: "{{$controller.countries.home}}" }}
+                };
+                //Create the watching for the analytics
+                analyticsFactory('view.controllers.TestController', options, null, null, log);
 
+                //Click in the dom
+                $('.b').click();
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some Method B, with Mike Howard!", options: {color: "b&w", rating: "US" }}));
             });
 
             it("Should be able to pass them in a watcher", function () {
+                var options = {
+                    someWatchedProperty: {name: "Some Watched Property!", options: {team: "{{$controller.office}}", city: "{{$controller.firstName}}"}}
+                };
+                analyticsFactory('view.controllers.TestController', null, options, null, log);
 
+                //Increment
+                myScope.someWatchedProperty++;
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some Watched Property!", options: {team: "Office Depot", city: "Mike Howard"}}));
             });
 
             it("Should be able to pass them in an event listener", function () {
+                var options = {
+                    'theEventOfTheCentury': {name: "My Event with {{$controller.countries.away}}!", options: {make: "Ford", model: "Explorer"}}
+                };
+                analyticsFactory('view.controllers.TestController', null, null, options, log);
 
+                //Broadcast
+                $rootScope.$broadcast("theEventOfTheCentury");
+                $rootScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "My Event with Denmark!", options: {make: "Ford", model: "Explorer"}}));
             });
         });
 
