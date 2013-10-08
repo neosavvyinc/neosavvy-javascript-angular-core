@@ -347,7 +347,17 @@ ddescribe("nsAnalyticsFactory", function () {
 
         describe("arguments", function () {
             it("Should be able to pass them in a $scope method", function () {
+                var options = {
+                    someMethodC: {name: "Some {{arguments[0]}} Method C!", options: {person: "This Dude", industry: "{{arguments[1]}}"}}
+                };
+                analyticsFactory('view.controllers.TestController', options, null, null, log);
 
+                //Click in the dom
+                myScope.someMethodC(555, "Leeeroy Jenkins!");
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some 555 Method C!", options: {person: "This Dude", industry: "Leeeroy Jenkins!"}}));
             });
 
             it("Should be able to pass them in a controller method", function () {

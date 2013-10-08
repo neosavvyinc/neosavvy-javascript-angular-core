@@ -15,16 +15,25 @@
                 return new RegExp("(" + designation.replace(/\$/g, "\\$") + "\.|{{|}})", "g");
             });
 
-            function _track(item, name, options, log) {
+            function _track(item, name, options, parentArguments, log) {
                 _.forEach(DESIGNATION_TO_PROPERTIES, function(val, key) {
                     var re = _regexFromDesignation(key);
                     var dre = _dRegexFromDesignation(key);
+                    var are = /{{arguments\[\d\]}}/;
 
-                    //Name
+                    //Name, $scope & $controller variables
                     var match = String(name).match(re);
                     if (match && match.length) {
                         for (var i = 0; i < match.length; i++) {
                             name = name.replace(re, Neosavvy.Core.Utils.MapUtils.get(item[val], match[i].replace(dre, "")));
+                        }
+                    }
+                    //Name, arugment variables
+                    match = String(name).match(are);
+                    if (match && match.length) {
+                        for (var i = 0; i < match.length; i++) {
+                            var argIndex = parseInt(match[i].replace(/({{arguments\[|\]}})/g, ""));
+                            name = name.replace(match[i], parentArguments[argIndex]);
                         }
                     }
 
@@ -34,6 +43,13 @@
                         if (match && match.length) {
                             for (var i = 0; i < match.length; i++) {
                                 options[subKey] = String(subVal).replace(match[i], Neosavvy.Core.Utils.MapUtils.get(item[val], match[i].replace(dre, "")));
+                            }
+                        }
+                        match = String(subVal).match(are);
+                        if (match && match.length) {
+                            for (var i = 0; i < match.length; i++) {
+                                var argIndex = parseInt(match[i].replace(/({{arguments\[|\]}})/g, ""));
+                                options[subKey] = String(subVal).replace(match[i], parentArguments[argIndex]);
                             }
                         }
                     });
@@ -57,7 +73,7 @@
                                 var copy = angular.copy(particularItem[thing]);
                                 particularItem[thing] = function () {
                                     copy.apply(copy, arguments);
-                                    _track(item, tracking.name, tracking.options, log);
+                                    _track(item, tracking.name, tracking.options, arguments, log);
                                 };
                             }
                         }
@@ -76,7 +92,7 @@
                                     var copy = watcher.fn;
                                     watcher.fn = function () {
                                         copy.apply(copy, arguments);
-                                        _track(item, tracking.name, tracking.options, log);
+                                        _track(item, tracking.name, tracking.options, arguments, log);
                                     };
                                 }
                             });
@@ -96,7 +112,7 @@
                                     var copy = scope.$$listeners[eventStack][i];
                                     scope.$$listeners[eventStack][i] = function () {
                                         copy.apply(copy, arguments);
-                                        _track(item, tracking.name, tracking.options, log);
+                                        _track(item, tracking.name, tracking.options, arguments, log);
                                     };
                                 }
                             }
