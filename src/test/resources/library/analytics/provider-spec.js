@@ -1,6 +1,8 @@
-ddescribe("nsAnalyticsFactory", function () {
-    var $rootScope,
+describe("nsAnalyticsFactory", function () {
+    var $$injector,
+        $rootScope,
         $scope,
+        $compile,
         controller,
         directive,
         analyticsFactory,
@@ -9,10 +11,48 @@ ddescribe("nsAnalyticsFactory", function () {
             '<span class="c" ng-click="someMethodC()"></span>' +
             '</div>',
         el,
-        log;
+        log,
+        callBackSpy;
 
     beforeEach(function () {
-        angular.module('testcontrollers', []).value('testValues', {
+        callBackSpy = jasmine.createSpyObj('callBackSpy', ['callBack1', 'callBack2', 'callBack3']);
+        angular.module('testcontrollers', []).config([
+            'nsAnalyticsFactoryProvider',
+            function (nsAnalyticsFactoryProvider) {
+                //Should throw an error when provided a config that is undefined
+                expect(function () {
+                    nsAnalyticsFactoryProvider.config(undefined);
+                }).toThrow();
+
+                //Should throw an error when provided a config that is null
+                expect(function () {
+                    nsAnalyticsFactoryProvider.config(null);
+                }).toThrow();
+
+                //Should throw an error when provided a config that is not an object
+                expect(function () {
+                    nsAnalyticsFactoryProvider.config([]);
+                }).toThrow();
+
+                //Should throw an error when the config does not contain a callback property
+                expect(function () {
+                    nsAnalyticsFactoryProvider.config({});
+                }).toThrow();
+
+                //Should be able to define a single tracking method
+                nsAnalyticsFactoryProvider.config({callBack: function (name, options) {
+                    //This is a callback body
+                }});
+
+                //Should be able to define two or more tracking methods
+                nsAnalyticsFactoryProvider.config({callBack: [
+                    callBackSpy.callBack1,
+                    callBackSpy.callBack2,
+                    callBackSpy.callBack3
+                ]});
+            }
+        ]);
+        angular.module('testcontrollers').value('testValues', {
             vValue: 0,
             staticValue: {
                 name: "Something Static"
@@ -100,9 +140,11 @@ ddescribe("nsAnalyticsFactory", function () {
     beforeEach(function () {
         module.apply(module, Neosavvy.AngularCore.Dependencies.concat('testcontrollers'));
 
-        inject(function ($injector, $controller, $compile) {
+        inject(function ($injector, $controller) {
+            $$injector = $injector;
             $rootScope = $injector.get('$rootScope');
             $scope = $rootScope.$new();
+            $compile = $injector.get('$compile');
             el = $compile(angular.element(simpleControllerHtml))($scope);
             analyticsFactory = $injector.get('nsAnalyticsFactory');
         });
@@ -470,6 +512,9 @@ ddescribe("nsAnalyticsFactory", function () {
 
                 expect(log.length).toEqual(1);
                 expect(log).toContain(JSON.stringify({name: "Some PG Method C!", options: {person: "Mike Howard", industry: "Leeeroy Jenkins!"}}));
+                expect(callBackSpy.callBack1).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
+                expect(callBackSpy.callBack2).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
+                expect(callBackSpy.callBack3).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
             });
 
             it("Should be able to pass them in a controller method", function () {
@@ -485,6 +530,9 @@ ddescribe("nsAnalyticsFactory", function () {
 
                 expect(log.length).toEqual(1);
                 expect(log).toContain(JSON.stringify({name: "Some Orioles B, with scheven!", options: {color: "b&w", rating: "Denmark" }}));
+                expect(callBackSpy.callBack1).toHaveBeenCalledWith("Some Orioles B, with scheven!", {color: "b&w", rating: "Denmark" });
+                expect(callBackSpy.callBack2).toHaveBeenCalledWith("Some Orioles B, with scheven!", {color: "b&w", rating: "Denmark" });
+                expect(callBackSpy.callBack3).toHaveBeenCalledWith("Some Orioles B, with scheven!", {color: "b&w", rating: "Denmark" });
             });
 
             it("Should be able to pass them in a watcher", function () {
@@ -501,6 +549,9 @@ ddescribe("nsAnalyticsFactory", function () {
 
                 //Exhibits newValue and oldValue
                 expect(log).toContain(JSON.stringify({name: "Some 0 Property!", options: {team: "Office Depot", city: "The town of Orson Wells"}}));
+                expect(callBackSpy.callBack1).toHaveBeenCalledWith("Some 0 Property!", {team: "Office Depot", city: "The town of Orson Wells"});
+                expect(callBackSpy.callBack2).toHaveBeenCalledWith("Some 0 Property!", {team: "Office Depot", city: "The town of Orson Wells"});
+                expect(callBackSpy.callBack3).toHaveBeenCalledWith("Some 0 Property!", {team: "Office Depot", city: "The town of Orson Wells"});
             });
 
             it("Should be able to pass them in an event listener", function () {
@@ -515,6 +566,9 @@ ddescribe("nsAnalyticsFactory", function () {
 
                 expect(log.length).toEqual(1);
                 expect(log).toContain(JSON.stringify({name: "My Hollywood with US!", options: {make: "LEEROY JENKINS MF!", model: "Explorer"}}));
+                expect(callBackSpy.callBack1).toHaveBeenCalledWith("My Hollywood with US!", {make: "LEEROY JENKINS MF!", model: "Explorer"});
+                expect(callBackSpy.callBack2).toHaveBeenCalledWith("My Hollywood with US!", {make: "LEEROY JENKINS MF!", model: "Explorer"});
+                expect(callBackSpy.callBack3).toHaveBeenCalledWith("My Hollywood with US!", {make: "LEEROY JENKINS MF!", model: "Explorer"});
             });
         });
 
@@ -525,17 +579,43 @@ ddescribe("nsAnalyticsFactory", function () {
             analyticsFactory('view.controllers.TestController', options, null, null, 1000, log);
 
             //Click in the dom
-            runs(function() {
+            runs(function () {
                 myScope.someMethodC(555, "Leeeroy Jenkins!");
                 myScope.$digest();
             });
 
             waits(2000);
 
-            runs(function() {
+            runs(function () {
                 expect(log.length).toEqual(1);
                 expect(log).toContain(JSON.stringify({name: "Some PG Method C!", options: {person: "Mike Howard", industry: "Leeeroy Jenkins!"}}));
+                expect(callBackSpy.callBack1).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
+                expect(callBackSpy.callBack2).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
+                expect(callBackSpy.callBack3).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
             });
+        });
+
+        it("Should be able to add tracking to controllers of the same name after the tracking is declared", function () {
+            var options = {
+                someMethodC: {name: "Some {{$scope.movies.oldest.rating}} Method C!", options: {person: "{{$controller.firstName}}", industry: "{{arguments[1]}}"}}
+            };
+            analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
+            var newHtml = '<div ng-controller="view.controllers.TestController as ctrl"></div>';
+            var newEl = $compile(angular.element(newHtml))(myScope);
+            $('body').append(newEl);
+            myScope.$digest();
+
+            var newScope = myScope.$$childHead;
+            newScope.movies.oldest.rating = "R"
+            newScope['ctrl'].firstName = "Richard Nixon";
+            newScope.someMethodC("Unused Argument", "Used Argument");
+            newScope.$digest();
+
+            expect(log.length).toEqual(1);
+            expect(log).toContain(JSON.stringify({name: "Some R Method C!", options: {person: "Richard Nixon", industry: "Used Argument"}}));
+            expect(callBackSpy.callBack1).toHaveBeenCalledWith("Some R Method C!", {person: "Richard Nixon", industry: "Used Argument"});
+            expect(callBackSpy.callBack2).toHaveBeenCalledWith("Some R Method C!", {person: "Richard Nixon", industry: "Used Argument"});
+            expect(callBackSpy.callBack3).toHaveBeenCalledWith("Some R Method C!", {person: "Richard Nixon", industry: "Used Argument"});
         });
     });
 
@@ -545,19 +625,5 @@ ddescribe("nsAnalyticsFactory", function () {
 
     describe("factories", function () {
         //Will hold for a later release
-    });
-
-    describe("config", function () {
-        it("Should be able to define a single tracking method", function () {
-
-        });
-
-        it("Should be able to define two or more tracking methods", function () {
-
-        });
-
-        it("Should be able to set a default delay in the config", function () {
-
-        });
     });
 });

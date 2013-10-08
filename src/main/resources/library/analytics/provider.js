@@ -1,14 +1,24 @@
 (function (window, angular) {
     var controllers = {};
+    var newInstantiatedController;
 
     function NsAnalyticsFactoryProvider() {
         var config = {delay: 1000};
+
+        this.config = function (options) {
+            if (options && typeof options === 'object' && options.callBack) {
+                config = _.merge(config, options);
+            } else {
+                throw "nsAnalytics needs a config object with a callback defined as a single function or an array.";
+            }
+        };
+
         this.$get = ['$injector', '$rootScope', function ($injector, $rootScope) {
             var CONTROLLER_DESIGNATION = '$controller',
                 SCOPE_DESIGNATION = '$scope',
                 DESIGNATION_TO_PROPERTIES = {'$controller': 'instance', '$scope': 'scope'};
 
-            var _regexFromDesignation = memoize(function(designation) {
+            var _regexFromDesignation = memoize(function (designation) {
                 return new RegExp("{{" + designation.replace(/\$/g, "\\$") + "\..*}}", "g");
             });
 
@@ -17,7 +27,7 @@
             });
 
             function _track(item, name, options, parentArguments, log) {
-                _.forEach(DESIGNATION_TO_PROPERTIES, function(val, key) {
+                _.forEach(DESIGNATION_TO_PROPERTIES, function (val, key) {
                     var re = _regexFromDesignation(key);
                     var dre = _dRegexFromDesignation(key);
                     var are = /{{arguments\[\d\]}}/;
@@ -56,7 +66,15 @@
                     });
                 });
 
-                //Tracking methods called here
+                if (config.callBack) {
+                    if (_.isArray(config.callBack)) {
+                        _.forEach(config.callBack, function (callBack) {
+                            callBack(name, options);
+                        });
+                    } else {
+                        config.callBack(name, options);
+                    }
+                }
 
                 if (log) {
                     log.push(JSON.stringify({name: name, options: options}));
@@ -78,7 +96,7 @@
                                     if (delay <= 0) {
                                         _track(item, tracking.name, tracking.options, arguments, log);
                                     } else {
-                                        setTimeout(function() {
+                                        setTimeout(function () {
                                             _track(item, tracking.name, tracking.options, parentArguments, log);
                                         }, delay);
                                     }
@@ -104,7 +122,7 @@
                                         if (delay <= 0) {
                                             _track(item, tracking.name, tracking.options, arguments, log);
                                         } else {
-                                            setTimeout(function() {
+                                            setTimeout(function () {
                                                 _track(item, tracking.name, tracking.options, parentArguments, log);
                                             }, delay);
                                         }
@@ -131,7 +149,7 @@
                                         if (delay <= 0) {
                                             _track(item, tracking.name, tracking.options, arguments, log);
                                         } else {
-                                            setTimeout(function() {
+                                            setTimeout(function () {
                                                 _track(item, tracking.name, tracking.options, parentArguments, log);
                                             }, delay);
                                         }
@@ -143,26 +161,48 @@
                 }
             }
 
+            function _applyAllTracking(item, methods, watches, listeners, delay, log) {
+                //Watchers and listeners cannot be applied to a controller instance
+                _applyMethodTracking(item, CONTROLLER_DESIGNATION, methods, delay, log);
+                //Watchers and listeners can be applied to a controller scope
+                _applyMethodTracking(item, SCOPE_DESIGNATION, methods, delay, log);
+                _applyWatcherTracking(item, SCOPE_DESIGNATION, watches, delay, log);
+                _applyEventTracking(item, SCOPE_DESIGNATION, listeners, delay, log);
+            }
+
+            var instantiatedAnalytics = {};
+
             function nsAnalyticsFactory(injectedName, methods, watches, listeners, delay, log) {
                 var myControllers = controllers[injectedName];
                 delay = delay || delay === 0 ? delay : config.delay;
-                if (myControllers && myControllers.length) {
+                if (newInstantiatedController) {
+                    if (instantiatedAnalytics[injectedName] && instantiatedAnalytics[injectedName].length) {
+                        for (var i = 0; i < instantiatedAnalytics[injectedName].length; i++) {
+                            var args = instantiatedAnalytics[injectedName][i];
+                            _applyAllTracking(newInstantiatedController, args.methods, args.watches, args.listeners, args.delay, args.log);
+                        }
+                    }
+                }
+                else if (myControllers && myControllers.length) {
                     for (var i = 0; i < myControllers.length; i++) {
-                        //Watchers and listeners cannot be applied to a controller instance
-                        _applyMethodTracking(myControllers[i], CONTROLLER_DESIGNATION, methods, delay, log);
-                        //Watchers and listeners can be applied to a controller scope
-                        _applyMethodTracking(myControllers[i], SCOPE_DESIGNATION, methods, delay, log);
-                        _applyWatcherTracking(myControllers[i], SCOPE_DESIGNATION, watches, delay, log);
-                        _applyEventTracking(myControllers[i], SCOPE_DESIGNATION, listeners, delay, log);
+                        _applyAllTracking(myControllers[i], methods, watches, listeners, delay, log);
+                    }
+                    if (methods || watches || listeners) {
+                        //Newly instantiated controllers, getting them up to speed
+                        instantiatedAnalytics[injectedName] = instantiatedAnalytics[injectedName] || [];
+                        instantiatedAnalytics[injectedName].push({methods: methods, watches: watches, listeners: listeners, delay: delay, log: log});
                     }
                 }
             }
+
+            //Always clear this out after a run
+            newInstantiatedController = null;
 
             return nsAnalyticsFactory;
         }];
     }
 
-    function ngControllerDirective() {
+    function ngControllerDirective(nsAnalyticsFactory) {
         var CNTRL_REG = /^(\S+)(\s+as\s+(\w+))?$/;
         return {
             scope: false,
@@ -171,12 +211,18 @@
             link: function (scope, element, attrs, ctrl) {
                 //matches[1] is the controller name matches[3] is the name in the DOM
                 var matches = attrs.ngController.match(CNTRL_REG);
-                controllers[matches[1]] = controllers[matches[1]] || [];
-                controllers[matches[1]].push({scope: scope, instance: ctrl});
+                var name = matches[1];
+                controllers[name] = controllers[name] || [];
+                controllers[name].push({scope: scope, instance: ctrl});
+
+                //Get the new controller up to speed
+                newInstantiatedController = {scope: scope, instance: ctrl};
+                nsAnalyticsFactory(name);
+                newInstantiatedController = null;
             }
         }
     }
 
     angular.module('neosavvy.angularcore.analytics').provider('nsAnalyticsFactory', NsAnalyticsFactoryProvider);
-    angular.module('neosavvy.angularcore.analytics').directive('ngController', ngControllerDirective);
+    angular.module('neosavvy.angularcore.analytics').directive('ngController', ['nsAnalyticsFactory', ngControllerDirective]);
 })(window, window.angular);
