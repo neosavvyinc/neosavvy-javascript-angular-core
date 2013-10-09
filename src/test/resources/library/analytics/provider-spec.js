@@ -635,6 +635,66 @@ ddescribe("nsAnalyticsFactory", function () {
             expect(log).toContain(JSON.stringify({name: "Some PG Method C!", options: {person: "Mike Howard", industry: "Star Trek"}}));
             expect(mySpy).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Star Trek"});
         });
+
+        it("Should be able to play nice with baseOptions defined in the config", function () {
+            var options = {
+                someMethodC: {name: "Some {{$scope.movies.oldest.rating}} Method C!", options: {person: "{{$controller.firstName}}", industry: "{{arguments[1]}}"}}
+            };
+            var mySpy = jasmine.createSpy();
+            myNsAnalyticsFactoryProvider.config(
+                {baseOptions: {
+                    name: "Terrence",
+                    facility: "Tank Engine",
+                    bestFriend: "Trevor"
+                },
+                    callBack: mySpy});
+            analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
+
+            myScope.someMethodC("Star Wars", "Star Trek");
+            myScope.$digest();
+
+            expect(log.length).toEqual(1);
+            expect(log).toContain(JSON.stringify({name: "Some PG Method C!", options: {name: "Terrence",
+                facility: "Tank Engine",
+                bestFriend: "Trevor",
+                person: "Mike Howard",
+                industry: "Star Trek"}}));
+            expect(mySpy).toHaveBeenCalledWith("Some PG Method C!", {name: "Terrence",
+                facility: "Tank Engine",
+                bestFriend: "Trevor",
+                person: "Mike Howard",
+                industry: "Star Trek"});
+        });
+
+        it("Should be able to play nice with overwriting base options", function () {
+            var options = {
+                someMethodC: {name: "Some {{$scope.movies.oldest.rating}} Method C!", options: {person: "{{$controller.firstName}}", industry: "{{arguments[1]}}", facility: "Dump Truck"}}
+            };
+            var mySpy = jasmine.createSpy();
+            myNsAnalyticsFactoryProvider.config(
+                {baseOptions: {
+                    name: "Terrence",
+                    facility: "Tank Engine",
+                    bestFriend: "Trevor"
+                },
+                    callBack: mySpy});
+            analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
+
+            myScope.someMethodC("Star Wars", "Star Trek");
+            myScope.$digest();
+
+            expect(log.length).toEqual(1);
+            expect(log).toContain(JSON.stringify({name: "Some PG Method C!", options: {name: "Terrence",
+                facility: "Dump Truck",
+                bestFriend: "Trevor",
+                person: "Mike Howard",
+                industry: "Star Trek"}}));
+            expect(mySpy).toHaveBeenCalledWith("Some PG Method C!", {name: "Terrence",
+                facility: "Dump Truck",
+                bestFriend: "Trevor",
+                person: "Mike Howard",
+                industry: "Star Trek"});
+        });
     });
 
     describe("directives", function () {

@@ -16,6 +16,8 @@
             } else {
                 throw "nsAnalytics needs a config object with a callback defined as a single function or an array.";
             }
+
+            config.baseOptions = options.baseOptions;
         };
 
         this.$get = ['$injector', '$rootScope', function ($injector, $rootScope) {
@@ -38,6 +40,10 @@
                     }));
 
                 if (config.callBack) {
+                    if (config.baseOptions) {
+                        tracking.options = _.merge(config.baseOptions, tracking.options);
+                    }
+
                     if (_.isArray(config.callBack)) {
                         for (var i = 0; i < config.callBack.length; i++) {
                             config.callBack[i](tracking.name, tracking.options);
