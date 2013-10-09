@@ -4,6 +4,12 @@
 
     function NsAnalyticsFactoryProvider() {
         var config = {delay: 1000};
+        var ALL_SCOPE_REGEX = /{{\$scope\..*?}}/g,
+            SCOPE_REPLACE_REGEX = /({{\$scope\.|}})/g,
+            ALL_CONTROLLER_REGEX = /{{\$controller\..*?}}/g,
+            CONTROLLER_REPLACE_REGEX = /({{\$controller\.|}})/g,
+            ALL_ARGS_REGEX = /{{arguments\[\d\]}}/g,
+            ARGS_REPLACE_REGEX = /({{arguments\[|\]}})/g;
 
         this.config = function (options) {
             if (options && typeof options === 'object' && options.callBack) {
@@ -18,75 +24,43 @@
                 SCOPE_DESIGNATION = '$scope',
                 DESIGNATION_TO_PROPERTIES = {'$controller': 'instance', '$scope': 'scope'};
 
-            var _regexFromDesignation = memoize(function (designation) {
-                return new RegExp("{{" + designation.replace(/\$/g, "\\$") + "\..*}}", "g");
-            });
 
-            var _dRegexFromDesignation = memoize(function (designation) {
-                return new RegExp("(" + designation.replace(/\$/g, "\\$") + "\.|{{|}})", "g");
-            });
-
-            function _track(item, name, options, parentArguments, log) {
-                _.forEach(DESIGNATION_TO_PROPERTIES, function (val, key) {
-                    var re = _regexFromDesignation(key);
-                    var dre = _dRegexFromDesignation(key);
-                    var are = /{{arguments\[\d\]}}/;
-
-                    //Name, $scope & $controller variables
-                    var match = String(name).match(re);
-                    if (match && match.length) {
-                        for (var i = 0; i < match.length; i++) {
-                            name = name.replace(re, Neosavvy.Core.Utils.MapUtils.get(item[val], match[i].replace(dre, "")));
-                        }
-                    }
-                    //Name, arugment variables
-                    match = String(name).match(are);
-                    if (match && match.length) {
-                        for (var i = 0; i < match.length; i++) {
-                            var argIndex = parseInt(match[i].replace(/({{arguments\[|\]}})/g, ""));
-                            name = name.replace(match[i], parentArguments[argIndex]);
-                        }
-                    }
-
-                    //Options
-                    _.forEach(options, function (subVal, subKey) {
-                        var match = String(subVal).match(re);
-                        if (match && match.length) {
-                            for (var i = 0; i < match.length; i++) {
-                                options[subKey] = String(subVal).replace(match[i], Neosavvy.Core.Utils.MapUtils.get(item[val], match[i].replace(dre, "")));
-                            }
-                        }
-                        match = String(subVal).match(are);
-                        if (match && match.length) {
-                            for (var i = 0; i < match.length; i++) {
-                                var argIndex = parseInt(match[i].replace(/({{arguments\[|\]}})/g, ""));
-                                options[subKey] = String(subVal).replace(match[i], parentArguments[argIndex]);
-                            }
-                        }
-                    });
+            function _track(item, tracking, parentArguments, log) {
+                //Name, Options: $scope, $controller, and arguments[x] variables
+                var trackingString = JSON.stringify(tracking);
+                trackingString = trackingString.replace(ALL_SCOPE_REGEX, function (match) {
+                    return Neosavvy.Core.Utils.MapUtils.get(item.scope, match.replace(SCOPE_REPLACE_REGEX, ""));
                 });
+                trackingString = trackingString.replace(ALL_CONTROLLER_REGEX, function (match) {
+                    return Neosavvy.Core.Utils.MapUtils.get(item.instance, match.replace(CONTROLLER_REPLACE_REGEX, ""));
+                });
+                trackingString = trackingString.replace(ALL_ARGS_REGEX, function (match) {
+                    var argIndex = parseInt(match.replace(ARGS_REPLACE_REGEX, ""));
+                    return parentArguments[argIndex];
+                });
+                tracking = JSON.parse(trackingString);
 
                 if (config.callBack) {
                     if (_.isArray(config.callBack)) {
                         _.forEach(config.callBack, function (callBack) {
-                            callBack(name, options);
+                            callBack(tracking.name, tracking.options);
                         });
                     } else {
-                        config.callBack(name, options);
+                        config.callBack(tracking.name, tracking.options);
                     }
                 }
 
                 if (log) {
-                    log.push(JSON.stringify({name: name, options: options}));
+                    log.push(JSON.stringify({name: tracking.name, options: tracking.options}));
                 }
             }
 
-            function _chooseTrackingDelay(item, name, options, parentArguments, delay, log) {
+            function _chooseTrackingDelay(item, tracking, parentArguments, delay, log) {
                 if (delay <= 0) {
-                    _track(item, name, options, parentArguments, log);
+                    _track(item, tracking, parentArguments, log);
                 } else {
                     setTimeout(function () {
-                        _track(item, name, options, parentArguments, log);
+                        _track(item, tracking, parentArguments, log);
                     }, delay);
                 }
             }
@@ -102,7 +76,7 @@
                                 var copy = angular.copy(particularItem[thing]);
                                 particularItem[thing] = function () {
                                     copy.apply(copy, arguments);
-                                    _chooseTrackingDelay(item, tracking.name, tracking.options, arguments, delay, log);
+                                    _chooseTrackingDelay(item, tracking, arguments, delay, log);
                                 };
                             }
                         }
@@ -121,7 +95,7 @@
                                     var copy = watcher.fn;
                                     watcher.fn = function () {
                                         copy.apply(copy, arguments);
-                                        _chooseTrackingDelay(item, tracking.name, tracking.options, arguments, delay, log);
+                                        _chooseTrackingDelay(item, tracking, arguments, delay, log);
                                     };
                                 }
                             });
@@ -141,7 +115,7 @@
                                     var copy = scope.$$listeners[eventStack][i];
                                     scope.$$listeners[eventStack][i] = function () {
                                         copy.apply(copy, arguments);
-                                        _chooseTrackingDelay(item, tracking.name, tracking.options, arguments, delay, log);
+                                        _chooseTrackingDelay(item, tracking, arguments, delay, log);
                                     };
                                 }
                             }
