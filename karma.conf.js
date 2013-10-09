@@ -17,6 +17,7 @@ module.exports = function(config) {
             'src/main/resources/lib/lodash/lodash.compat.js',
             'src/main/resources/lib/jquery/jquery.js',
             'src/main/resources/lib/q/q.js',
+            'src/main/resources/lib/node-uuid/uuid.js',
             'src/main/resources/lib/neosavvy-javascript-core/neosavvy-javascript-core.js',
             'src/main/resources/lib/angular/angular.js',
             'src/main/resources/lib/angular-*/*.js',
