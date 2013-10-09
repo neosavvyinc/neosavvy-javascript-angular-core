@@ -28,16 +28,23 @@
 
             function _track(item, uniqueId, parentArguments, log) {
                 //Name, Options: $scope, $controller, and arguments[x] variables
-                var tracking = JSON.parse(hashedTrackingStrings[uniqueId].
-                    replace(ALL_SCOPE_REGEX,function (match) {
+                var tracking = hashedTrackingStrings[uniqueId].hashString;
+                if (hashedTrackingStrings[uniqueId].hasScopeVars) {
+                    tracking = tracking.replace(ALL_SCOPE_REGEX,function (match) {
                         return Neosavvy.Core.Utils.MapUtils.highPerformanceGet(item.scope, match.replace(SCOPE_REPLACE_REGEX, ""));
-                    }).
-                    replace(ALL_CONTROLLER_REGEX,function (match) {
+                    });
+                }
+                if (hashedTrackingStrings[uniqueId].hasControllerVars) {
+                    tracking = tracking.replace(ALL_CONTROLLER_REGEX,function (match) {
                         return Neosavvy.Core.Utils.MapUtils.highPerformanceGet(item.instance, match.replace(CONTROLLER_REPLACE_REGEX, ""));
-                    }).
-                    replace(ALL_ARGS_REGEX, function (match) {
+                    });
+                }
+                if (hashedTrackingStrings[uniqueId].hasArgumentsVars) {
+                    tracking = tracking.replace(ALL_ARGS_REGEX, function (match) {
                         return parentArguments[parseInt(match.match(/\d/)[0])];
-                    }));
+                    });
+                }
+                tracking = JSON.parse(tracking);
 
                 if (config.callBack) {
                     if (config.baseOptions) {
@@ -68,6 +75,16 @@
                 }
             }
 
+            function _cacheTrackingAndReturnUid(hash) {
+                var uniqueId = uuid.v1();
+                var hashString = JSON.stringify(hash);
+                hashedTrackingStrings[uniqueId] = {hashString: hashString,
+                    hasScopeVars: hashString.indexOf("{{$scope.") !== -1,
+                    hasControllerVars: hashString.indexOf("{{$controller") !== -1,
+                    hasArgumentsVars: hashString.indexOf("{arguments[") !== -1};
+                return uniqueId;
+            }
+
             function _applyMethodTracking(item, designation, methods, delay, log) {
                 if (item && methods) {
                     var particularItem = item[DESIGNATION_TO_PROPERTIES[designation]];
@@ -75,8 +92,7 @@
                         for (var thing in particularItem) {
                             //Methods
                             if (methods[thing] && typeof particularItem[thing] === 'function' && thing !== 'constructor') {
-                                var uniqueId = uuid.v1();
-                                hashedTrackingStrings[uniqueId] = JSON.stringify(methods[thing]);
+                                var uniqueId = _cacheTrackingAndReturnUid(methods[thing]);
                                 var copy = angular.copy(particularItem[thing]);
                                 particularItem[thing] = function () {
                                     copy.apply(copy, arguments);
@@ -95,8 +111,7 @@
                         if (scope && scope.$$watchers && scope.$$watchers.length) {
                             _.forEach(scope.$$watchers, function (watcher) {
                                 if (watches[watcher.exp]) {
-                                    var uniqueId = uuid.v1();
-                                    hashedTrackingStrings[uniqueId] = JSON.stringify(watches[watcher.exp]);
+                                    var uniqueId = _cacheTrackingAndReturnUid(watches[watcher.exp]);
                                     var copy = watcher.fn;
                                     watcher.fn = function () {
                                         copy.apply(copy, arguments);
@@ -115,8 +130,7 @@
                     if (scope && scope.$$listeners) {
                         for (var eventStack in scope.$$listeners) {
                             if (listeners[eventStack] && scope.$$listeners[eventStack].length) {
-                                var uniqueId = uuid.v1();
-                                hashedTrackingStrings[uniqueId] = JSON.stringify(listeners[eventStack]);
+                                var uniqueId = _cacheTrackingAndReturnUid(listeners[eventStack]);
                                 for (var i = 0; i < scope.$$listeners[eventStack].length; i++) {
                                     var copy = scope.$$listeners[eventStack][i];
                                     scope.$$listeners[eventStack][i] = function () {
