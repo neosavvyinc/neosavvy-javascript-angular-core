@@ -262,20 +262,86 @@ describe("nsAnalyticsFactory", function () {
         });
 
         describe("$controller", function () {
-            it("Should maintain a consistent deviation threshhold", function () {
-
+            it("Should maintain a consistent deviation threshhold with no dynamic arguments", function () {
+                var withoutTracking = elapsedTime(function() {
+                    for (var i = 0; i < 10000; i++) {
+                        myScope['ctrl'].someMethodA();
+                    }
+                });
+                var options = {
+                    someMethodA: {name: "Some Method D!", options: {age: 55, color: "Green"}}
+                };
+                analyticsFactory('view.controllers.TestController', options, null, null, 0);
+                var withTracking = elapsedTime(function() {
+                    for (var i = 0; i < 10000; i++) {
+                        myScope['ctrl'].someMethodA();
+                    }
+                });
+                console.log("NO TRACKING: " + withoutTracking);
+                console.log("TRACKING: " + withTracking);
+                expect(withTracking - withoutTracking).toBeLessThan(400);
             });
-        });
 
-        describe("watchers", function () {
-            it("Should maintain a consistent deviation threshhold", function () {
-
+            it("Should maintain a consistent threshold with function arguments", function () {
+                var withoutTracking = elapsedTime(function() {
+                    for (var i = 0; i < 10000; i++) {
+                        myScope['ctrl'].someMethodA(87);
+                    }
+                });
+                var options = {
+                    someMethodA: {name: "Some Method D!", options: {age: "{{arguments[0]}}", color: "Green"}}
+                };
+                analyticsFactory('view.controllers.TestController', options, null, null, 0);
+                var withTracking = elapsedTime(function() {
+                    for (var i = 0; i < 10000; i++) {
+                        myScope['ctrl'].someMethodA(87);
+                    }
+                });
+                console.log("NO TRACKING: " + withoutTracking);
+                console.log("TRACKING: " + withTracking);
+                expect(withTracking - withoutTracking).toBeLessThan(400);
             });
-        });
 
-        describe("listeners", function () {
-            it("Should maintain a consistent deviation threshhold", function () {
+            it("Should maintain a consistent threshold with $scope arguments", function () {
+                myScope.valueThatIsImportant = "Charlie!";
+                var withoutTracking = elapsedTime(function() {
+                    for (var i = 0; i < 10000; i++) {
+                        myScope['ctrl'].someMethodA(87);
+                    }
+                });
+                var options = {
+                    someMethodA: {name: "Some Method D!", options: {firstName: "{{$scope.valueThatIsImportant}}", color: "Green"}}
+                };
+                analyticsFactory('view.controllers.TestController', options, null, null, 0);
+                var withTracking = elapsedTime(function() {
+                    for (var i = 0; i < 10000; i++) {
+                        myScope['ctrl'].someMethodA(87);
+                    }
+                });
+                console.log("NO TRACKING: " + withoutTracking);
+                console.log("TRACKING: " + withTracking);
+                expect(withTracking - withoutTracking).toBeLessThan(400);
+            });
 
+            it("Should maintain a consistent threshold with $controller arugments", function () {
+                myScope['ctrl'].valueThatIsImportant = "George!";
+                var withoutTracking = elapsedTime(function() {
+                    for (var i = 0; i < 10000; i++) {
+                        myScope['ctrl'].someMethodA(87);
+                    }
+                });
+                var options = {
+                    someMethodA: {name: "Some Method D!", options: {firstName: "{{$controller.valueThatIsImportant}}", color: "Green"}}
+                };
+                analyticsFactory('view.controllers.TestController', options, null, null, 0);
+                var withTracking = elapsedTime(function() {
+                    for (var i = 0; i < 10000; i++) {
+                        myScope['ctrl'].someMethodA(87);
+                    }
+                });
+                console.log("NO TRACKING: " + withoutTracking);
+                console.log("TRACKING: " + withTracking);
+                expect(withTracking - withoutTracking).toBeLessThan(400);
             });
         });
     });

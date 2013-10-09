@@ -26,7 +26,7 @@
 
             function _track(item, uniqueId, parentArguments, log) {
                 //Name, Options: $scope, $controller, and arguments[x] variables
-                var tracking = hashedTrackingStrings[uniqueId].
+                var tracking = JSON.parse(hashedTrackingStrings[uniqueId].
                     replace(ALL_SCOPE_REGEX,function (match) {
                         return Neosavvy.Core.Utils.MapUtils.highPerformanceGet(item.scope, match.replace(SCOPE_REPLACE_REGEX, ""));
                     }).
@@ -35,15 +35,13 @@
                     }).
                     replace(ALL_ARGS_REGEX, function (match) {
                         return parentArguments[parseInt(match.match(/\d/)[0])];
-                    });
-
-                tracking = JSON.parse(tracking);
+                    }));
 
                 if (config.callBack) {
                     if (_.isArray(config.callBack)) {
-                        _.forEach(config.callBack, function (callBack) {
-                            callBack(tracking.name, tracking.options);
-                        });
+                        for (var i = 0; i < config.callBack.length; i++) {
+                            config.callBack[i](tracking.name, tracking.options);
+                        }
                     } else {
                         config.callBack(tracking.name, tracking.options);
                     }
