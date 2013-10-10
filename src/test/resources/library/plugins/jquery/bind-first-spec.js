@@ -178,4 +178,40 @@ describe("jQuery.bind-first", function () {
         });
     });
 
+    describe("on with delegate", function () {
+        beforeEach(function() {
+            $body.on('click', 'button', function (e) {
+                order++;
+                normalBindingCalled = order;
+            });
+        });
+
+        it("Should be able to use onFirst to move an event forward before another", function () {
+            expect(normalBindingCalled).toEqual(0);
+            ordered(function () {
+                $myButton.click();
+            });
+            expect(firstBindingCalled).toEqual(0);
+            expect(normalBindingCalled).toEqual(1);
+            expect(order).toEqual(1);
+
+
+            $body.onFirst({'click': standardBindFirstHandler}, 'button');
+            ordered(function () {
+                $myButton.click();
+            });
+            expect(firstBindingCalled).toEqual(1);
+            expect(normalBindingCalled).toEqual(2);
+
+            //Try again
+            $myButton.click();
+            expect(firstBindingCalled).toEqual(3);
+            expect(normalBindingCalled).toEqual(4);
+        });
+
+        afterEach(function() {
+            $body.off();
+        });
+    });
+
 });
