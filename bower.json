@@ -1,6 +1,6 @@
 {
     "name": "neosavvy-javascript-angular-core",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "authors": [
         "Neosavvy, Inc."
     ],
@@ -14,7 +14,6 @@
     ],
     "license": "MIT",
     "homepage": "http://www.neosavvy.com",
-    "private": true,
     "ignore": [
         "**/.*",
         "node_modules",
