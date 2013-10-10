@@ -27,7 +27,7 @@
         "jquery": "~2.0.3",
         "angular": "~1.2.0-rc.2",
         "angular-cache": "~1.2.0",
-        "neosavvy-javascript-core": "~0.0.2"
+        "neosavvy-javascript-core": "~0.0.3"
     },
     "devDependencies": {
         "angular-animate": "~1.2.0-rc.2",

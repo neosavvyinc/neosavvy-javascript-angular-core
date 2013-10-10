@@ -1,4 +1,4 @@
-ddescribe("nsAnalyticsFactory", function () {
+describe("nsAnalyticsFactory", function () {
     var $$injector,
         $rootScope,
         $scope,
