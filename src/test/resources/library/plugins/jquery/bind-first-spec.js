@@ -1,4 +1,4 @@
-ddescribe("jQuery.bind-first", function () {
+describe("jQuery.bind-first", function () {
     var $body = $('body'),
         $myButton,
         normalBindingCalled = 0,
