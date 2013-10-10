@@ -27,7 +27,7 @@ module.exports = function(config) {
             'src/main/resources/library/directives/**/*.js',
             'src/main/resources/library/filters/**/*.js',
             'src/main/resources/library/services/**/*.js',
-            'src/test/resources/**/*-spec.js'
+            'src/test/resources/**/*-perf.js'
         ],
 
 

@@ -4,6 +4,11 @@
 
     function NsAnalyticsFactoryProvider() {
         var config = {delay: 1000};
+        var ALL_SCOPE_REGEX = /{{\$scope\..*?}}/g,
+            SCOPE_REPLACE_REGEX = /({{\$scope\.|}})/g,
+            ALL_CONTROLLER_REGEX = /{{\$controller\..*?}}/g,
+            CONTROLLER_REPLACE_REGEX = /({{\$controller\.|}})/g,
+            ALL_ARGS_REGEX = /{{arguments\[\d\]}}/g;
 
         this.config = function (options) {
             if (options && typeof options === 'object' && options.callBack) {
@@ -11,84 +16,73 @@
             } else {
                 throw "nsAnalytics needs a config object with a callback defined as a single function or an array.";
             }
+
+            config.baseOptions = options.baseOptions;
         };
 
         this.$get = ['$injector', '$rootScope', function ($injector, $rootScope) {
             var CONTROLLER_DESIGNATION = '$controller',
                 SCOPE_DESIGNATION = '$scope',
-                DESIGNATION_TO_PROPERTIES = {'$controller': 'instance', '$scope': 'scope'};
+                DESIGNATION_TO_PROPERTIES = {'$controller': 'instance', '$scope': 'scope'},
+                hashedTrackingStrings = {};
 
-            var _regexFromDesignation = memoize(function (designation) {
-                return new RegExp("{{" + designation.replace(/\$/g, "\\$") + "\..*}}", "g");
-            });
-
-            var _dRegexFromDesignation = memoize(function (designation) {
-                return new RegExp("(" + designation.replace(/\$/g, "\\$") + "\.|{{|}})", "g");
-            });
-
-            function _track(item, name, options, parentArguments, log) {
-                _.forEach(DESIGNATION_TO_PROPERTIES, function (val, key) {
-                    var re = _regexFromDesignation(key);
-                    var dre = _dRegexFromDesignation(key);
-                    var are = /{{arguments\[\d\]}}/;
-
-                    //Name, $scope & $controller variables
-                    var match = String(name).match(re);
-                    if (match && match.length) {
-                        for (var i = 0; i < match.length; i++) {
-                            name = name.replace(re, Neosavvy.Core.Utils.MapUtils.get(item[val], match[i].replace(dre, "")));
-                        }
-                    }
-                    //Name, arugment variables
-                    match = String(name).match(are);
-                    if (match && match.length) {
-                        for (var i = 0; i < match.length; i++) {
-                            var argIndex = parseInt(match[i].replace(/({{arguments\[|\]}})/g, ""));
-                            name = name.replace(match[i], parentArguments[argIndex]);
-                        }
-                    }
-
-                    //Options
-                    _.forEach(options, function (subVal, subKey) {
-                        var match = String(subVal).match(re);
-                        if (match && match.length) {
-                            for (var i = 0; i < match.length; i++) {
-                                options[subKey] = String(subVal).replace(match[i], Neosavvy.Core.Utils.MapUtils.get(item[val], match[i].replace(dre, "")));
-                            }
-                        }
-                        match = String(subVal).match(are);
-                        if (match && match.length) {
-                            for (var i = 0; i < match.length; i++) {
-                                var argIndex = parseInt(match[i].replace(/({{arguments\[|\]}})/g, ""));
-                                options[subKey] = String(subVal).replace(match[i], parentArguments[argIndex]);
-                            }
-                        }
+            function _track(item, uniqueId, parentArguments, log) {
+                //Name, Options: $scope, $controller, and arguments[x] variables
+                var tracking = hashedTrackingStrings[uniqueId].hashString;
+                if (hashedTrackingStrings[uniqueId].hasScopeVars) {
+                    tracking = tracking.replace(ALL_SCOPE_REGEX,function (match) {
+                        return Neosavvy.Core.Utils.MapUtils.highPerformanceGet(item.scope, match.replace(SCOPE_REPLACE_REGEX, ""));
                     });
-                });
+                }
+                if (hashedTrackingStrings[uniqueId].hasControllerVars) {
+                    tracking = tracking.replace(ALL_CONTROLLER_REGEX,function (match) {
+                        return Neosavvy.Core.Utils.MapUtils.highPerformanceGet(item.instance, match.replace(CONTROLLER_REPLACE_REGEX, ""));
+                    });
+                }
+                if (hashedTrackingStrings[uniqueId].hasArgumentsVars) {
+                    tracking = tracking.replace(ALL_ARGS_REGEX, function (match) {
+                        return parentArguments[parseInt(match.match(/\d/)[0])];
+                    });
+                }
+                tracking = JSON.parse(tracking);
 
                 if (config.callBack) {
+                    if (config.baseOptions) {
+                        tracking.options = _.merge(config.baseOptions, tracking.options);
+                    }
+
                     if (_.isArray(config.callBack)) {
-                        _.forEach(config.callBack, function (callBack) {
-                            callBack(name, options);
-                        });
+                        for (var i = 0; i < config.callBack.length; i++) {
+                            config.callBack[i](tracking.name, tracking.options);
+                        }
                     } else {
-                        config.callBack(name, options);
+                        config.callBack(tracking.name, tracking.options);
                     }
                 }
 
                 if (log) {
-                    log.push(JSON.stringify({name: name, options: options}));
+                    log.push(JSON.stringify({name: tracking.name, options: tracking.options}));
                 }
             }
 
-            function _chooseTrackingDelay(item, name, options, parentArguments, delay, log) {
+            function _chooseTrackingDelay(item, tracking, parentArguments, delay, log) {
                 if (delay <= 0) {
-                    _track(item, name, options, parentArguments, log);
+                    _track(item, tracking, parentArguments, log);
                 } else {
                     setTimeout(function () {
-                        _track(item, name, options, parentArguments, log);
+                        _track(item, tracking, parentArguments, log);
                     }, delay);
                 }
+            }
+
+            function _cacheTrackingAndReturnUid(hash) {
+                var uniqueId = uuid.v1();
+                var hashString = JSON.stringify(hash);
+                hashedTrackingStrings[uniqueId] = {hashString: hashString,
+                    hasScopeVars: hashString.indexOf("{{$scope.") !== -1,
+                    hasControllerVars: hashString.indexOf("{{$controller") !== -1,
+                    hasArgumentsVars: hashString.indexOf("{arguments[") !== -1};
+                return uniqueId;
             }
 
             function _applyMethodTracking(item, designation, methods, delay, log) {
@@ -98,11 +92,11 @@
                         for (var thing in particularItem) {
                             //Methods
                             if (methods[thing] && typeof particularItem[thing] === 'function' && thing !== 'constructor') {
-                                var tracking = methods[thing];
+                                var uniqueId = _cacheTrackingAndReturnUid(methods[thing]);
                                 var copy = angular.copy(particularItem[thing]);
                                 particularItem[thing] = function () {
                                     copy.apply(copy, arguments);
-                                    _chooseTrackingDelay(item, tracking.name, tracking.options, arguments, delay, log);
+                                    _chooseTrackingDelay(item, uniqueId, arguments, delay, log);
                                 };
                             }
                         }
@@ -117,11 +111,11 @@
                         if (scope && scope.$$watchers && scope.$$watchers.length) {
                             _.forEach(scope.$$watchers, function (watcher) {
                                 if (watches[watcher.exp]) {
-                                    var tracking = watches[watcher.exp];
+                                    var uniqueId = _cacheTrackingAndReturnUid(watches[watcher.exp]);
                                     var copy = watcher.fn;
                                     watcher.fn = function () {
                                         copy.apply(copy, arguments);
-                                        _chooseTrackingDelay(item, tracking.name, tracking.options, arguments, delay, log);
+                                        _chooseTrackingDelay(item, uniqueId, arguments, delay, log);
                                     };
                                 }
                             });
@@ -136,12 +130,12 @@
                     if (scope && scope.$$listeners) {
                         for (var eventStack in scope.$$listeners) {
                             if (listeners[eventStack] && scope.$$listeners[eventStack].length) {
-                                var tracking = listeners[eventStack];
+                                var uniqueId = _cacheTrackingAndReturnUid(listeners[eventStack]);
                                 for (var i = 0; i < scope.$$listeners[eventStack].length; i++) {
                                     var copy = scope.$$listeners[eventStack][i];
                                     scope.$$listeners[eventStack][i] = function () {
                                         copy.apply(copy, arguments);
-                                        _chooseTrackingDelay(item, tracking.name, tracking.options, arguments, delay, log);
+                                        _chooseTrackingDelay(item, uniqueId, arguments, delay, log);
                                     };
                                 }
                             }

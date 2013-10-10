@@ -91,7 +91,7 @@
 
             // events map
             if (typeof types === 'object') {
-                for (type in types)
+                for (var type in types)
                     if (types.hasOwnProperty(type)) {
                         moveEventHandlers($el, type, isDelegated);
                     }

@@ -107,6 +107,9 @@ module.exports = function (grunt) {
             unit:{
                 configFile:'karma.conf.js'
             },
+            performance:{
+                configFile:'karma.perf.conf.js'
+            },
             build:{
                 configFile:'karma.conf.js',
                 singleRun:true,
