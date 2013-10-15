@@ -24,18 +24,18 @@
     "dependencies": {
         "q": "~0.9.7",
         "jquery": "~2.0.3",
-        "angular": "~1.2.0-rc.2",
+        "angular": "1.2.0-rc.2",
         "angular-cache": "~1.2.0",
         "neosavvy-javascript-core": "~0.0.3"
     },
     "devDependencies": {
-        "angular-animate": "~1.2.0-rc.2",
-        "angular-cookies": "~1.2.0-rc.2",
-        "angular-loader": "~1.2.0-rc.2",
-        "angular-mocks": "~1.2.0-rc.2",
-        "angular-resource": "~1.2.0-rc.2",
-        "angular-route": "~1.2.0-rc.2",
-        "angular-sanitize": "~1.2.0-rc.2",
-        "angular-touch": "~1.2.0-rc.2"
+        "angular-animate": "1.2.0-rc.2",
+        "angular-cookies": "1.2.0-rc.2",
+        "angular-loader": "1.2.0-rc.2",
+        "angular-mocks": "1.2.0-rc.2",
+        "angular-resource": "1.2.0-rc.2",
+        "angular-route": "1.2.0-rc.2",
+        "angular-sanitize": "1.2.0-rc.2",
+        "angular-touch": "1.2.0-rc.2"
     }
 }
