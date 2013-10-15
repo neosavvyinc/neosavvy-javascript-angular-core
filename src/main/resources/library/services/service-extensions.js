@@ -26,10 +26,10 @@ Neosavvy.AngularCore.Services.factory('nsServiceExtensions',
 
                 if (!headers) return parsed;
 
-                forEach(headers.split('\n'), function (line) {
+                _.forEach(headers.split('\n'), function (line) {
                     i = line.indexOf(':');
-                    key = lowercase(trim(line.substr(0, i)));
-                    val = trim(line.substr(i + 1));
+                    key = _.lowercase(trim(line.substr(0, i)));
+                    val = _.trim(line.substr(i + 1));
 
                     if (key) {
                         if (parsed[key]) {
