@@ -8,7 +8,8 @@
             SCOPE_REPLACE_REGEX = /({{\$scope\.|}})/g,
             ALL_CONTROLLER_REGEX = /{{\$controller\..*?}}/g,
             CONTROLLER_REPLACE_REGEX = /({{\$controller\.|}})/g,
-            ALL_ARGS_REGEX = /{{arguments\[\d\]}}/g;
+            ALL_ARGS_REGEX = /{{arguments\[\d\]}}/g,
+            INJECTED_VALUES_REGEX = /{{[^\s]+?#[^\s]+?}}/g;
 
         this.config = function (options) {
             if (options && typeof options === 'object' && options.callBack) {
@@ -42,6 +43,12 @@
                 if (hashedTrackingStrings[uniqueId].hasArgumentsVars) {
                     tracking = tracking.replace(ALL_ARGS_REGEX, function (match) {
                         return parentArguments[parseInt(match.match(/\d/)[0])];
+                    });
+                }
+                if (hashedTrackingStrings[uniqueId].hasInjectedVars) {
+                    tracking = tracking.replace(INJECTED_VALUES_REGEX, function (match) {
+                        var ar = match.replace(/{{|}}/g, "").split("#");
+                        return Neosavvy.Core.Utils.MapUtils.highPerformanceGet($injector.get(ar[0]), ar[1]);
                     });
                 }
                 tracking = JSON.parse(tracking);
@@ -78,10 +85,13 @@
             function _cacheTrackingAndReturnUid(hash) {
                 var uniqueId = uuid.v1();
                 var hashString = JSON.stringify(hash);
+                var injectedMatch = hashString.match(INJECTED_VALUES_REGEX);
                 hashedTrackingStrings[uniqueId] = {hashString: hashString,
                     hasScopeVars: hashString.indexOf("{{$scope.") !== -1,
                     hasControllerVars: hashString.indexOf("{{$controller") !== -1,
-                    hasArgumentsVars: hashString.indexOf("{arguments[") !== -1};
+                    hasArgumentsVars: hashString.indexOf("{arguments[") !== -1,
+                    hasInjectedVars: (injectedMatch && injectedMatch.length)
+                };
                 return uniqueId;
             }
 
@@ -113,7 +123,7 @@
                             _.forEach(scope.$$watchers, function (watcher) {
                                 if (watches[watcher.exp]) {
                                     var uniqueId = _cacheTrackingAndReturnUid(watches[watcher.exp]);
-                                    watcher.fn = (function(copy, uniqueId) {
+                                    watcher.fn = (function (copy, uniqueId) {
                                         return function () {
                                             copy.apply(copy, arguments);
                                             _chooseTrackingDelay(item, uniqueId, arguments, delay, log);

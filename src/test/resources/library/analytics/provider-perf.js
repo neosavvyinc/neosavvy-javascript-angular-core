@@ -1,4 +1,4 @@
-describe("nsAnalyticsFactory", function () {
+describe("nsAnalytics", function () {
     var $$injector,
         $rootScope,
         $scope,
@@ -18,36 +18,36 @@ describe("nsAnalyticsFactory", function () {
     beforeEach(function () {
         callBackSpy = jasmine.createSpyObj('callBackSpy', ['callBack1', 'callBack2', 'callBack3']);
         angular.module('testcontrollers', []).config([
-            'nsAnalyticsFactoryProvider',
-            function (nsAnalyticsFactoryProvider) {
-                myNsAnalyticsFactoryProvider = nsAnalyticsFactoryProvider;
+            'nsAnalyticsProvider',
+            function (nsAnalyticsProvider) {
+                myNsAnalyticsFactoryProvider = nsAnalyticsProvider;
                 //Should throw an error when provided a config that is undefined
                 expect(function () {
-                    nsAnalyticsFactoryProvider.config(undefined);
+                    nsAnalyticsProvider.config(undefined);
                 }).toThrow();
 
                 //Should throw an error when provided a config that is null
                 expect(function () {
-                    nsAnalyticsFactoryProvider.config(null);
+                    nsAnalyticsProvider.config(null);
                 }).toThrow();
 
                 //Should throw an error when provided a config that is not an object
                 expect(function () {
-                    nsAnalyticsFactoryProvider.config([]);
+                    nsAnalyticsProvider.config([]);
                 }).toThrow();
 
                 //Should throw an error when the config does not contain a callback property
                 expect(function () {
-                    nsAnalyticsFactoryProvider.config({});
+                    nsAnalyticsProvider.config({});
                 }).toThrow();
 
                 //Should be able to define a single tracking method
-                nsAnalyticsFactoryProvider.config({callBack: function (name, options) {
+                nsAnalyticsProvider.config({callBack: function (name, options) {
                     //This is a callback body
                 }});
 
                 //Should be able to define two or more tracking methods
-                nsAnalyticsFactoryProvider.config({callBack: [
+                nsAnalyticsProvider.config({callBack: [
                     callBackSpy.callBack1,
                     callBackSpy.callBack2,
                     callBackSpy.callBack3
@@ -148,7 +148,7 @@ describe("nsAnalyticsFactory", function () {
             $scope = $rootScope.$new();
             $compile = $injector.get('$compile');
             el = $compile(angular.element(simpleControllerHtml))($scope);
-            analyticsFactory = $injector.get('nsAnalyticsFactory');
+            analyticsFactory = $injector.get('nsAnalytics');
         });
 
         log = [];
@@ -332,6 +332,28 @@ describe("nsAnalyticsFactory", function () {
                 });
                 var options = {
                     someMethodA: {name: "Some Method D!", options: {firstName: "{{$controller.valueThatIsImportant}}", color: "Green"}}
+                };
+                analyticsFactory('view.controllers.TestController', options, null, null, 0);
+                var withTracking = elapsedTime(function() {
+                    for (var i = 0; i < 10000; i++) {
+                        myScope['ctrl'].someMethodA(87);
+                    }
+                });
+                console.log("NO TRACKING: " + withoutTracking);
+                console.log("TRACKING: " + withTracking);
+                expect(withTracking - withoutTracking).toBeLessThan(400);
+            });
+        });
+
+        describe("injected values", function () {
+            it("Should perform with a values item access", function () {
+                var withoutTracking = elapsedTime(function() {
+                    for (var i = 0; i < 10000; i++) {
+                        myScope['ctrl'].someMethodA(87);
+                    }
+                });
+                var options = {
+                    someMethodA: {name: "Some Method D!", options: {firstName: "{{testValues#static.name}}", color: "Green"}}
                 };
                 analyticsFactory('view.controllers.TestController', options, null, null, 0);
                 var withTracking = elapsedTime(function() {
