@@ -165,6 +165,11 @@ describe("nsControllers", function () {
                 expect(obj.scope.testValue).toEqual(88);
                 expect(obj.scope.TCtrl).toEqual(obj.instance);
             });
+
+            it("Should put a name key in the hash for the new instantiated controller", function () {
+                var obj = nsControllers.getLast();
+                expect(obj.name).toEqual("TestController");
+            });
         });
 
         afterEach(function () {

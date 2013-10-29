@@ -17,6 +17,7 @@
 
                 //Get the new controller up to speed
                 newInstantiatedController = controllers[name][controllers[name].length - 1];
+                newInstantiatedController.name = name;
                 //nsAnalytics(name);
             }
         }
