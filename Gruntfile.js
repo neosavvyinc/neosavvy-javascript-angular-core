@@ -114,6 +114,11 @@ module.exports = function (grunt) {
                 configFile:'karma.conf.js',
                 singleRun:true,
                 browsers:['Chrome']
+            },
+            ci: {
+                configFile:'karma.conf.js',
+                singleRun:true,
+                browsers:['PhantomJS']
             }
         },
         ngdocs: {
@@ -194,7 +199,8 @@ module.exports = function (grunt) {
     /**
      * Phase 4 is to run tests against the pre-copied source and post-copied source
      */
-    grunt.registerTask('runTests', ['karma:build', 'ngdocs', 'shell:renameCoverage']);
+    grunt.registerTask('runTestsBuild', ['karma:build', 'ngdocs', 'shell:renameCoverage']);
+    grunt.registerTask('runTestsCi', ['karma:ci', 'ngdocs', 'shell:renameCoverage']);
 
     /**
      * Phase 5 is to deploy and start the application
@@ -202,6 +208,7 @@ module.exports = function (grunt) {
     grunt.registerTask('deploy', ['concurrent']);
 
     // Default task.
-    grunt.registerTask('default', ['verify', 'clean', 'resolve', 'copyResources', 'runTests', 'deploy']);
+    grunt.registerTask('default', ['verify', 'clean', 'resolve', 'copyResources', 'runTestsBuild', 'deploy']);
+    grunt.registerTask('ci', ['verify', 'clean', 'resolve', 'copyResources', 'runTestsCi']);
 
 };
