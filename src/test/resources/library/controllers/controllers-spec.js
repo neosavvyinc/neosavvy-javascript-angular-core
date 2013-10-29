@@ -60,6 +60,7 @@ describe("nsControllers", function () {
                     var obj = nsControllers.get()['TestController'][i];
                     expect(obj.instance).toBeDefined();
                     expect(obj.scope).toBeDefined();
+                    expect(obj.name).toEqual("TestController");
                     expect(obj.instance.testInstanceMethod).toBeDefined();
                     expect(typeof obj.instance.testInstanceMethod).toEqual('function');
                     expect(obj.scope.testValue).toEqual(88);
@@ -72,6 +73,7 @@ describe("nsControllers", function () {
                     var obj = nsControllers.get()['OtherTestController'][i];
                     expect(obj.instance).toBeDefined();
                     expect(obj.scope).toBeDefined();
+                    expect(obj.name).toEqual("OtherTestController");
                     expect(obj.scope.testScopeMethod).toBeDefined();
                     expect(typeof obj.scope.testScopeMethod).toEqual("function");
                     expect(obj.instance.testValue).toEqual("Mike!");
@@ -91,6 +93,7 @@ describe("nsControllers", function () {
                     var obj = nsControllers.get("TestController")[i];
                     expect(obj.instance).toBeDefined();
                     expect(obj.scope).toBeDefined();
+                    expect(obj.name).toEqual("TestController");
                     expect(obj.instance.testInstanceMethod).toBeDefined();
                     expect(typeof obj.instance.testInstanceMethod).toEqual('function');
                     expect(obj.scope.testValue).toEqual(88);
@@ -103,6 +106,7 @@ describe("nsControllers", function () {
                 var obj = nsControllers.getById('TestController', 'my-controller');
                 expect(obj.instance).toBeDefined();
                 expect(obj.scope).toBeDefined();
+                expect(obj.name).toEqual("TestController");
                 expect(obj.id).toEqual('my-controller');
                 expect(obj.instance.testInstanceMethod).toBeDefined();
                 expect(typeof obj.instance.testInstanceMethod).toEqual('function');
@@ -128,6 +132,7 @@ describe("nsControllers", function () {
                 var obj = nsControllers.getByScope($scopeB.$$childHead);
                 expect(obj.instance).toBeDefined();
                 expect(obj.scope).toBeDefined();
+                expect(obj.name).toEqual("OtherTestController");
                 expect(obj.scope.testScopeMethod).toBeDefined();
                 expect(typeof obj.scope.testScopeMethod).toEqual("function");
                 expect(obj.instance.testValue).toEqual("Mike!");
@@ -137,6 +142,7 @@ describe("nsControllers", function () {
                 var obj = nsControllers.getByScope($scopeC.$$childHead.$id);
                 expect(obj.instance).toBeDefined();
                 expect(obj.scope).toBeDefined();
+                expect(obj.name).toEqual("TestController");
                 expect(obj.instance.testInstanceMethod).toBeDefined();
                 expect(typeof obj.instance.testInstanceMethod).toEqual('function');
                 expect(obj.scope.testValue).toEqual(88);

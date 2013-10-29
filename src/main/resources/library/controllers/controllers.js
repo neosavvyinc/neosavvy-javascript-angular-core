@@ -13,11 +13,10 @@
                 var matches = attrs.ngController.match(CNTRL_REG);
                 var name = matches[1];
                 controllers[name] = controllers[name] || [];
-                controllers[name].push({id: (attrs.id || undefined), scope: scope, instance: ctrl});
+                controllers[name].push({id: (attrs.id || undefined), name: name, scope: scope, instance: ctrl});
 
                 //Get the new controller up to speed
                 newInstantiatedController = controllers[name][controllers[name].length - 1];
-                newInstantiatedController.name = name;
                 //nsAnalytics(name);
             }
         }
