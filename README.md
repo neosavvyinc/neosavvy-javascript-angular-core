@@ -4,7 +4,7 @@ javascript-angular-core
 Neosavvy, Inc. core libraries for angular js.
 
 
-### 0.0.6 - 09/29/2013
+### 0.0.7 - 09/29/2013
 
 Initial release.
 

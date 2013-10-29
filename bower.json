@@ -1,6 +1,6 @@
 {
     "name": "neosavvy-javascript-angular-core",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "authors": [
         "Neosavvy, Inc."
     ],
@@ -26,7 +26,7 @@
         "jquery": "~2.0.3",
         "angular": "1.2.0-rc.2",
         "angular-cache": "~1.2.0",
-        "neosavvy-javascript-core": "~0.0.3"
+        "neosavvy-javascript-core": "~0.0.4"
     },
     "devDependencies": {
         "angular-animate": "1.2.0-rc.2",
