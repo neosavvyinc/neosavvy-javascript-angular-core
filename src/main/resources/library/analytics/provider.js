@@ -1,5 +1,4 @@
 (function (window, angular) {
-    var controllers = {};
     var newInstantiatedController;
 
     function NsAnalyticsProvider() {
@@ -21,7 +20,7 @@
             config.baseOptions = options.baseOptions;
         };
 
-        this.$get = ['$injector', '$rootScope', function ($injector, $rootScope) {
+        this.$get = ['$injector', '$rootScope', 'nsControllers', function ($injector, $rootScope, nsControllers) {
             var CONTROLLER_DESIGNATION = '$controller',
                 SCOPE_DESIGNATION = '$scope',
                 DESIGNATION_TO_PROPERTIES = {'$controller': 'instance', '$scope': 'scope'},
@@ -169,7 +168,7 @@
             var instantiatedAnalytics = {};
 
             function nsAnalytics(injectedName, methods, watches, listeners, delay, log) {
-                var myControllers = controllers[injectedName];
+                var myControllers = nsControllers.get(injectedName);
                 delay = delay || delay === 0 ? delay : config.delay;
                 if (newInstantiatedController) {
                     if (instantiatedAnalytics[injectedName] && instantiatedAnalytics[injectedName].length) {
@@ -204,14 +203,12 @@
         var CNTRL_REG = /^(\S+)(\s+as\s+(\w+))?$/;
         return {
             scope: false,
-            priority: -100,
+            priority: -200,
             require: 'ngController',
             link: function (scope, element, attrs, ctrl) {
                 //matches[1] is the controller name matches[3] is the name in the DOM
                 var matches = attrs.ngController.match(CNTRL_REG);
                 var name = matches[1];
-                controllers[name] = controllers[name] || [];
-                controllers[name].push({scope: scope, instance: ctrl});
 
                 //Get the new controller up to speed
                 newInstantiatedController = {scope: scope, instance: ctrl};

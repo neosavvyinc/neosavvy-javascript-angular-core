@@ -24,6 +24,7 @@ module.exports = function(config) {
             'src/main/resources/library/plugins/jquery/bind-first.js',
             'src/main/resources/library/library.js',
             'src/main/resources/library/analytics/**/*.js',
+            'src/main/resources/library/controllers/**/*.js',
             'src/main/resources/library/directives/**/*.js',
             'src/main/resources/library/filters/**/*.js',
             'src/main/resources/library/services/**/*.js',
