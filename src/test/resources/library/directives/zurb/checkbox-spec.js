@@ -1,4 +1,4 @@
-ddescribe("nsZurbCheckbox", function () {
+describe("nsZurbCheckbox", function () {
     var $rootScope,
         $scope,
         $compile,
@@ -37,9 +37,11 @@ ddescribe("nsZurbCheckbox", function () {
     });
 
     function zurbClick() {
-        $('span.checkbox').addClass("checked");
         $('span.checkbox').click();
         $scope.$digest();
+
+        //Class is added after the click >> digest cycle
+        $('span.checkbox').addClass("checked");
     }
 
     it("Should compile the element and add it to the dom", function () {
