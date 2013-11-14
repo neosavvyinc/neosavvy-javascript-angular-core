@@ -6,8 +6,6 @@ Neosavvy.AngularCore.Directives
             link: function (scope, element, attrs, ctrl) {
                 ctrl.$parsers.unshift(function (viewValue) {
                     var valid = (!element.is(':visible') || !Neosavvy.Core.Utils.StringUtils.isBlank(viewValue));
-                    console.log("VISIBLE: " + element.is(':visible'));
-                    console.log("BLANK: " + Neosavvy.Core.Utils.StringUtils.isBlank(viewValue));
                     ctrl.$setValidity('nsRequiredIfShown', valid);
                     return valid ? viewValue : undefined;
                 })
