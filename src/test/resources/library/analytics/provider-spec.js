@@ -100,13 +100,23 @@ describe("nsAnalytics", function () {
                     $scope.dRun++;
                 };
 
+                $scope.eRun = 0;
+                $scope.someMethodE = function (plans, evil, good) {
+                    $scope.eRun++;
+                };
+
+                this.fRun = 0;
+                this.someMethodF = function (grapes, green, red) {
+                    ctrl.fRun++;
+                };
+
                 //Watchers
                 $scope.someWatchedProperty = 0;
                 $scope.testManager = testManager;
                 $scope.testValues = testValues;
 
                 $scope.someWatchedPropertyWatcherRun = 0;
-                $scope.$watch('someWatchedProperty', function (val) {
+                $scope.$watch('someWatchedProperty', function (val, oldVal) {
                     $scope.someWatchedPropertyWatcherRun++;
                 });
 
@@ -120,11 +130,17 @@ describe("nsAnalytics", function () {
                     $scope.managerWatchRun++;
                 });
 
+                $scope.someExposedProperty = 0;
+                $scope.exposedWatcher = function (copper, silver, gold) {
+                };
+                $scope.$watch('someExposedProperty', $scope.exposedWatcher);
+
                 //Events
                 $scope.eventOfTheCenturyRun = 0;
-                $scope.$on("theEventOfTheCentury", function (e, data) {
+                $scope.eventOfTheCenturyListener = function (e, data) {
                     $scope.eventOfTheCenturyRun++;
-                });
+                };
+                $scope.$on("theEventOfTheCentury", $scope.eventOfTheCenturyListener);
                 $scope.eventOfTheMonthRun = 0;
                 $scope.$on("theEventOfTheMonth", function (e, data) {
                     $scope.eventOfTheMonthRun++;
@@ -181,6 +197,50 @@ describe("nsAnalytics", function () {
         beforeEach(function () {
             //Because it is applied to the directive, it is the first child scope
             myScope = $scope.$$childHead;
+        });
+
+        it("Should retain the signature of the existing controller method", function () {
+            var options = {
+                someMethodE: {name: "Some Method E!", options: {age: 83, color: "Purple"}}
+            };
+            var toString = myScope.someMethodE.toString();
+            var stringConstructor = String(myScope.someMethodE);
+            analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
+            expect(myScope.someMethodE.toString()).toEqual(toString);
+            expect(String(myScope.someMethodE)).toEqual(stringConstructor);
+        });
+
+        it("Should retain the signature of the existing controller $scope method", function () {
+            var options = {
+                someMethodF: {name: "Some Method E!", options: {age: 83, color: "Purple"}}
+            };
+            var toString = myScope['ctrl'].someMethodF.toString();
+            var stringConstructor = String(myScope['ctrl'].someMethodF);
+            analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
+            expect(myScope['ctrl'].someMethodF.toString()).toEqual(toString);
+            expect(String(myScope['ctrl'].someMethodF)).toEqual(stringConstructor);
+        });
+
+        it("Should retain the signature of the existing watcher method", function () {
+            var options = {
+                someExposedProperty: {name: "Some Exposed Property!", options: {team: "Brewers", city: "Milwaukee"}}
+            };
+            var toString = myScope.exposedWatcher.toString();
+            var stringConstructor = String(myScope.exposedWatcher);
+            analyticsFactory('view.controllers.TestController', null, options, null, 0, log);
+            expect(myScope.exposedWatcher.toString()).toEqual(toString);
+            expect(String(myScope.exposedWatcher)).toEqual(stringConstructor);
+        });
+
+        it("Should retain the signature of the existing event handler", function () {
+            var options = {
+                theEventOfTheCentury: {name: "My Main Event!", options: {color: "brown"}}
+            };
+            var toString = myScope.eventOfTheCenturyListener.toString();
+            var stringConstructor = String(myScope.eventOfTheCenturyListener);
+            analyticsFactory('view.controllers.TestController', null, null, options, 0, log);
+            expect(myScope.eventOfTheCenturyListener.toString()).toEqual(toString);
+            expect(String(myScope.eventOfTheCenturyListener)).toEqual(stringConstructor);
         });
 
         it("Should attach analytics to specified methods on the controller itself", function () {
@@ -645,6 +705,321 @@ describe("nsAnalytics", function () {
 
             it("Should be able to pass them in an event listener", function () {
 
+            });
+        });
+
+        describe("conditions", function () {
+
+            it("Should be able to handle $scope based conditions", function () {
+                var options = {
+                    someMethodC: {
+                        condition: "$scope.myTeam === 'Jaguars'",
+                        name: "Some {{$scope.movies.oldest.rating}} Method C!",
+                        options: {person: "{{$controller.firstName}}", industry: "{{arguments[1]}}"}}
+                };
+                analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
+
+                //Click in the dom
+                myScope.someMethodC(555, "Leeeroy Jenkins!");
+                myScope.$digest();
+
+                expect(callBackSpy.callBack1).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack2).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack3).not.toHaveBeenCalled();
+
+                myScope.myTeam = 'Jaguars';
+                myScope.someMethodC(555, "Leeeroy Jenkins!");
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some PG Method C!", options: {person: "Mike Howard", industry: "Leeeroy Jenkins!"}}));
+                expect(callBackSpy.callBack1).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
+                expect(callBackSpy.callBack2).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
+                expect(callBackSpy.callBack3).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
+            });
+
+            it("Should be able handle numeric conditions", function () {
+                var options = {
+                    someWatchedProperty: {
+                        condition: "$scope.movies.count >= 15",
+                        name: "Some Watched Property!",
+                        options: {team: "Cubs", city: "St. Louis"}}
+                };
+                analyticsFactory('view.controllers.TestController', null, options, null, 0, log);
+
+                expect(myScope.someWatchedProperty).toEqual(0);
+                expect(myScope.someWatchedPropertyWatcherRun).toEqual(1);
+
+                //Increment
+                myScope.movies.count = 14;
+                myScope.someWatchedProperty++;
+                myScope.$digest();
+
+                expect(callBackSpy.callBack1).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack2).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack3).not.toHaveBeenCalled();
+
+                //Change Condition Here
+                myScope.movies.count = 15;
+                myScope.someWatchedProperty++;
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some Watched Property!", options: {team: "Cubs", city: "St. Louis"}}));
+                expect(callBackSpy.callBack1).toHaveBeenCalledWith("Some Watched Property!", {team: "Cubs", city: "St. Louis"});
+                expect(callBackSpy.callBack2).toHaveBeenCalledWith("Some Watched Property!", {team: "Cubs", city: "St. Louis"});
+                expect(callBackSpy.callBack3).toHaveBeenCalledWith("Some Watched Property!", {team: "Cubs", city: "St. Louis"});
+            });
+
+            it("Should be able to handle boolean conditions", function () {
+                var options = {
+                    'theEventOfTheCentury': {
+                        condition: "$scope.someFlag && $scope.someOtherFlag",
+                        name: "My Event!",
+                        options: {make: "Ford", model: "Explorer"}
+                    }
+                };
+                analyticsFactory('view.controllers.TestController', null, null, options, 0, log);
+
+                //Broadcast
+                myScope.someFlag = true;
+                myScope.someOtherFlag = false;
+                $rootScope.$broadcast("theEventOfTheCentury");
+                $rootScope.$digest();
+
+                expect(log.length).toEqual(0);
+
+                expect(callBackSpy.callBack1).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack2).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack3).not.toHaveBeenCalled();
+
+                myScope.someFlag = false;
+                myScope.someOtherFlag = true;
+                $rootScope.$broadcast("theEventOfTheCentury");
+                $rootScope.$digest();
+
+                expect(log.length).toEqual(0);
+
+                expect(callBackSpy.callBack1).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack2).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack3).not.toHaveBeenCalled();
+
+                myScope.someFlag = true;
+                myScope.someOtherFlag = true;
+                $rootScope.$broadcast("theEventOfTheCentury");
+                $rootScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "My Event!", options: {make: "Ford", model: "Explorer"}}));
+                expect(callBackSpy.callBack1).toHaveBeenCalledWith("My Event!", {make: "Ford", model: "Explorer"});
+                expect(callBackSpy.callBack2).toHaveBeenCalledWith("My Event!", {make: "Ford", model: "Explorer"});
+                expect(callBackSpy.callBack3).toHaveBeenCalledWith("My Event!", {make: "Ford", model: "Explorer"});
+            });
+
+            it("Should be able to handle !== null conditions", function () {
+                var options = {
+                    someMethodC: {
+                        condition: "$scope.myTeam !== null",
+                        name: "Some {{$scope.movies.oldest.rating}} Method C!",
+                        options: {person: "{{$controller.firstName}}", industry: "{{arguments[1]}}"}}
+                };
+                analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
+
+                //Click in the dom
+                myScope.myTeam = null;
+                myScope.someMethodC(555, "Leeeroy Jenkins!");
+                myScope.$digest();
+
+                expect(log.length).toEqual(0);
+                expect(callBackSpy.callBack1).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack2).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack3).not.toHaveBeenCalled();
+
+                myScope.myTeam = 'Jaguars';
+                myScope.someMethodC(555, "Leeeroy Jenkins!");
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some PG Method C!", options: {person: "Mike Howard", industry: "Leeeroy Jenkins!"}}));
+                expect(callBackSpy.callBack1).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
+                expect(callBackSpy.callBack2).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
+                expect(callBackSpy.callBack3).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
+            });
+
+            it("Should be able to handle !== undefined conditions", function () {
+                var options = {
+                    someMethodC: {
+                        condition: "$scope.myTeam !== undefined",
+                        name: "Some {{$scope.movies.oldest.rating}} Method C!",
+                        options: {person: "{{$controller.firstName}}", industry: "{{arguments[1]}}"}}
+                };
+                analyticsFactory('view.controllers.TestController', options, null, null, 0, log);
+
+                //Click in the dom
+                myScope.myTeam = undefined;
+                myScope.someMethodC(555, "Leeeroy Jenkins!");
+                myScope.$digest();
+
+                expect(log.length).toEqual(0);
+                expect(callBackSpy.callBack1).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack2).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack3).not.toHaveBeenCalled();
+
+                myScope.myTeam = 'Jaguars';
+                myScope.someMethodC(555, "Leeeroy Jenkins!");
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some PG Method C!", options: {person: "Mike Howard", industry: "Leeeroy Jenkins!"}}));
+                expect(callBackSpy.callBack1).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
+                expect(callBackSpy.callBack2).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
+                expect(callBackSpy.callBack3).toHaveBeenCalledWith("Some PG Method C!", {person: "Mike Howard", industry: "Leeeroy Jenkins!"});
+            });
+
+            it("Should be able to handle more complex conditions", function () {
+                var options = {
+                    someWatchedProperty: {
+                        condition: "(5 * $controller.numberProp) > ($scope.myVar.inner % 7) && $scope.movies.count < -90",
+                        name: "Some Watched Property!",
+                        options: {team: "Cubs", city: "St. Louis"}}
+                };
+                analyticsFactory('view.controllers.TestController', null, options, null, 0, log);
+
+                myScope['ctrl'].numberProp = 0;
+                myScope.myVar = {inner: 13};
+                myScope.movies.count = -87;
+
+                //Increment
+                myScope.someWatchedProperty++;
+                myScope.$digest();
+
+                expect(callBackSpy.callBack1).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack2).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack3).not.toHaveBeenCalled();
+
+                //Change Condition Here
+                myScope.movies.count = -90.5;
+                myScope.someWatchedProperty++;
+                myScope.$digest();
+
+                expect(callBackSpy.callBack1).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack2).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack3).not.toHaveBeenCalled();
+
+                myScope['ctrl'].numberProp = 2;
+                myScope.someWatchedProperty++;
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some Watched Property!", options: {team: "Cubs", city: "St. Louis"}}));
+                expect(callBackSpy.callBack1).toHaveBeenCalledWith("Some Watched Property!", {team: "Cubs", city: "St. Louis"});
+                expect(callBackSpy.callBack2).toHaveBeenCalledWith("Some Watched Property!", {team: "Cubs", city: "St. Louis"});
+                expect(callBackSpy.callBack3).toHaveBeenCalledWith("Some Watched Property!", {team: "Cubs", city: "St. Louis"});
+            });
+
+            it("Should be able to handle conditions without spaces", function () {
+                var options = {
+                    someWatchedProperty: {
+                        condition: "(5*$controller.numberProp)>($scope.myVar.inner%7)&&$scope.movies.count<-90",
+                        name: "Some Watched Property!",
+                        options: {team: "Cubs", city: "St. Louis"}}
+                };
+                analyticsFactory('view.controllers.TestController', null, options, null, 0, log);
+
+                myScope['ctrl'].numberProp = 0;
+                myScope.myVar = {inner: 13};
+                myScope.movies.count = -87;
+
+                //Increment
+                myScope.someWatchedProperty++;
+                myScope.$digest();
+
+                expect(callBackSpy.callBack1).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack2).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack3).not.toHaveBeenCalled();
+
+                //Change Condition Here
+                myScope.movies.count = -90.5;
+                myScope.someWatchedProperty++;
+                myScope.$digest();
+
+                expect(callBackSpy.callBack1).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack2).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack3).not.toHaveBeenCalled();
+
+                myScope['ctrl'].numberProp = 2;
+                myScope.someWatchedProperty++;
+                myScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "Some Watched Property!", options: {team: "Cubs", city: "St. Louis"}}));
+                expect(callBackSpy.callBack1).toHaveBeenCalledWith("Some Watched Property!", {team: "Cubs", city: "St. Louis"});
+                expect(callBackSpy.callBack2).toHaveBeenCalledWith("Some Watched Property!", {team: "Cubs", city: "St. Louis"});
+                expect(callBackSpy.callBack3).toHaveBeenCalledWith("Some Watched Property!", {team: "Cubs", city: "St. Louis"});
+            });
+
+            it("Should be able to handle controller based conditions", function () {
+                var options = {
+                    'theEventOfTheCentury': {
+                        condition: "$controller.myAge === 19",
+                        name: "My Event!",
+                        options: {make: "Ford", model: "Explorer"}
+                    }
+                };
+                analyticsFactory('view.controllers.TestController', null, null, options, 0, log);
+
+                //Broadcast
+                myScope['ctrl'].myAge = 18;
+                $rootScope.$broadcast("theEventOfTheCentury");
+                $rootScope.$digest();
+
+                expect(log.length).toEqual(0);
+
+                expect(callBackSpy.callBack1).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack2).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack3).not.toHaveBeenCalled();
+
+                myScope['ctrl'].myAge = 19;
+                $rootScope.$broadcast("theEventOfTheCentury");
+                $rootScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "My Event!", options: {make: "Ford", model: "Explorer"}}));
+                expect(callBackSpy.callBack1).toHaveBeenCalledWith("My Event!", {make: "Ford", model: "Explorer"});
+                expect(callBackSpy.callBack2).toHaveBeenCalledWith("My Event!", {make: "Ford", model: "Explorer"});
+                expect(callBackSpy.callBack3).toHaveBeenCalledWith("My Event!", {make: "Ford", model: "Explorer"});
+            });
+
+            it("Should be able to handle global injected variable based conditions", function () {
+                var options = {
+                    'theEventOfTheCentury': {
+                        condition: "testValues#vValue >= 5",
+                        name: "My Event!",
+                        options: {make: "Ford", model: "Explorer"}
+                    }
+                };
+                analyticsFactory('view.controllers.TestController', null, null, options, 0, log);
+
+                //Broadcast
+                myScope.testValues.vValue = 4;
+                $rootScope.$broadcast("theEventOfTheCentury");
+                $rootScope.$digest();
+
+                expect(log.length).toEqual(0);
+
+                expect(callBackSpy.callBack1).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack2).not.toHaveBeenCalled();
+                expect(callBackSpy.callBack3).not.toHaveBeenCalled();
+
+                myScope.testValues.vValue = 5;
+                $rootScope.$broadcast("theEventOfTheCentury");
+                $rootScope.$digest();
+
+                expect(log.length).toEqual(1);
+                expect(log).toContain(JSON.stringify({name: "My Event!", options: {make: "Ford", model: "Explorer"}}));
+                expect(callBackSpy.callBack1).toHaveBeenCalledWith("My Event!", {make: "Ford", model: "Explorer"});
+                expect(callBackSpy.callBack2).toHaveBeenCalledWith("My Event!", {make: "Ford", model: "Explorer"});
+                expect(callBackSpy.callBack3).toHaveBeenCalledWith("My Event!", {make: "Ford", model: "Explorer"});
             });
         });
 
