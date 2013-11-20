@@ -1,4 +1,4 @@
-ddescribe("nsSerialize", function () {
+describe("nsSerialize", function () {
     var $rootScope,
         $scope,
         $compile,
