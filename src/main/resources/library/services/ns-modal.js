@@ -2,7 +2,7 @@
  * @ngdoc object
  * @name neosavvy.angularcore.services.services:nsModal
  * @description
- * An angular service to generate modal pop-up. Play's nice with $animate if you've
+ * An angular service to generate modal pop-up. Plays nice with $animate if you've
  * included it in your project.
  * @example
  *  nsModal.open($scope.$new(), 'templateUrl.html' }) => opens a modal with a new child scope using `templateUrl.html` as the modal body
