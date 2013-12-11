@@ -16,6 +16,7 @@ module.exports = function(config) {
         files: [
             'src/main/resources/lib/lodash/lodash.compat.js',
             'src/main/resources/lib/jquery/jquery.js',
+            'src/main/resources/lib/jquery.maskedinput/jquery.maskedinput.js',
             'src/main/resources/lib/q/q.js',
             'src/main/resources/lib/node-uuid/uuid.js',
             'src/main/resources/lib/neosavvy-javascript-core/neosavvy-javascript-core.js',
