@@ -62,9 +62,9 @@ Neosavvy.AngularCore.Services.factory('nsModal',
             }, 0);
 
         } else {
-            throw 'missing template parameter'
+            throw 'missing template parameter';
         }
-    }
+    };
 
     function close () {
         if (overlay) {
@@ -76,7 +76,7 @@ Neosavvy.AngularCore.Services.factory('nsModal',
                 callback();
             }
         }
-    }
+    };
 
     return {
 
