@@ -1,0 +1,60 @@
+$smallHeight: 810px;
+$smallWidth: 650px;
+$modalLongTextWidth: 600px;
+$modalLongTextHeight: 435px;
+
+.modal-overlay {
+    position: absolute;
+    top: 50%;
+    @media screen and (min-width: $smallWidth) {
+        left: 50%;
+    }
+    z-index: 9999;
+    &.raised {
+      top: 7%;
+      @media screen and (min-height: $smallHeight) {
+        top: 21%;
+      }
+    }
+}
+
+/* position wrapper for centering modal */
+.modal-position {
+    position: relative;
+    background-color: #292929;
+    padding: 10px 25px 10px 25px;
+    @media screen and (min-width: $smallWidth) {
+        right: 50%;
+    }
+}
+
+// ngAnimate styles for modal
+.modal-overlay.ng-enter,
+.modal-overlay.ng-leave {
+    /* TO DO: add in vendor prefixes */
+    transition: 0.5s ease;
+}
+
+.modal-overlay.ng-enter,
+.modal-overlay.ng-leave.ng-leave-active {
+    top: -1000%;
+}
+
+.modal-overlay.ng-leave,
+.modal-overlay.ng-enter.ng-enter-active {
+    top: 50%;
+    &.raised {
+      top: 7%;
+      @media screen and (min-height: $smallHeight) {
+        top: 21%;
+      }
+    }
+}
+
+.modal-long-text {
+  background-color: #292929;
+  width: $modalLongTextWidth;
+  height: $modalLongTextHeight;
+  overflow-y: scroll;
+  padding: 15px;
+}

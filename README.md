@@ -3,6 +3,10 @@ javascript-angular-core
 
 Neosavvy, Inc. core libraries for angular js.
 
+## Notes on nsModal
+Required styles for nsModal are available in ```src/main/resources/styles/scss/modals.scss```.
+In order for nsModal to work properly, you must included the compiled CSS from this file in
+your application.
 
 ### 0.1.2 - 11/20/2013
 
