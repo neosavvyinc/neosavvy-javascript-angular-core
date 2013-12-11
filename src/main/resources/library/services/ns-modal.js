@@ -15,7 +15,7 @@ Neosavvy.AngularCore.Services.factory('nsModal',
         '$compile',
         '$document',
         '$animate',
-        '$timeout'
+        '$timeout',
         function($compile, $document, $animate, $timeout) {
 
     var body = $document.find('body'),
