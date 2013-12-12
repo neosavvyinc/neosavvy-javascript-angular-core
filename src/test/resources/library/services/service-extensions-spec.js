@@ -415,7 +415,7 @@ describe("nsServiceExtensions", function () {
                             doneSpy();
                             return {fail: failSpy};
                         },
-                            responseJSON: JSON.stringify(response)
+                            responseJSON: response
                         });
                     });
 

@@ -202,8 +202,9 @@ Neosavvy.AngularCore.Services.factory('nsServiceExtensions',
                         var jqXhr = $.ajax(request);
                         jqXhr.done(function (data) {
                                 if (params.transformResponse) {
+                                    //responseJSON for IE9 compatibility
                                     data = params.transformResponse(
-                                        jqXhr.responseText || jqXhr.responseJSON);
+                                        jqXhr.responseText || JSON.stringify(jqXhr.responseJSON));
                                 }
                                 deferred.resolve(data);
                             })
