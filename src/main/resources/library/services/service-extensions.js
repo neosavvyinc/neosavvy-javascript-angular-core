@@ -195,11 +195,14 @@ Neosavvy.AngularCore.Services.factory('nsServiceExtensions',
                         if (params.data) {
                             request.data = params.transformRequest ? params.transformRequest(params.data) : params.data;
                         }
+                        if (params.ajax) {
+                            request = _.merge(request, params.ajax);
+                        }
                         var jqXhr = $.ajax(request);
                         jqXhr.done(function (data) {
                                 if (params.transformResponse) {
                                     data = params.transformResponse(
-                                        jqXhr.responseText);
+                                        jqXhr.responseText || jqXhr.responseJSON);
                                 }
                                 deferred.resolve(data);
                             })

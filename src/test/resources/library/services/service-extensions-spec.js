@@ -354,6 +354,16 @@ describe("nsServiceExtensions", function () {
                     extensions.jqRequest({method: "GET", url: "http://api.github.com", transformResponse: transformResponseSpy});
                     expect(deferredResolveSpy).toHaveBeenCalledWith("This is tranformed!");
                 });
+
+                it("Should be able to pass ajax parameters to the ajax call", function () {
+                    extensions.jqRequest({method: "GET", url: "http://api.github.com", data: {food: "Fish"}, ajax: {xhrFields: {withCredentials: true}, crossDomain: true}});
+                    expect(ajaxSpy).toHaveBeenCalledWith({type: "GET", url:"http://api.github.com", data: {food: "Fish"}, xhrFields: {withCredentials: true}, crossDomain: true});
+                });
+
+                it("Should be able to overwrite existing parameters with ajax parameters that are set", function () {
+                    extensions.jqRequest({method: "GET", url: "http://api.github.com", data: {food: "Fish"}, ajax: {url: "http://www.neosavvy.com", crossDomain: false}});
+                    expect(ajaxSpy).toHaveBeenCalledWith({type: "GET", url:"http://www.neosavvy.com", data: {food: "Fish"}, crossDomain: false});
+                });
             });
 
             describe("ajax fail", function () {
@@ -392,9 +402,63 @@ describe("nsServiceExtensions", function () {
                 });
             });
 
+            describe("IE 9", function () {
+                describe("ajax success", function () {
+                    beforeEach(function () {
+                        response = [
+                            {name: "Tom"},
+                            {name: "Jerry"},
+                            {name: "Clark"}
+                        ];
+                        ajaxSpy = spyOn($, "ajax").andReturn({done: function (fn) {
+                            fn(response);
+                            doneSpy();
+                            return {fail: failSpy};
+                        },
+                            responseJSON: JSON.stringify(response)
+                        });
+                    });
+
+                    it("Should call ajax with the params in jq format", function () {
+                        extensions.jqRequest({method: "GET", url: "http://api.github.com", data: {food: "Fish"}});
+                        expect(ajaxSpy).toHaveBeenCalledWith({type: "GET", url:"http://api.github.com", data: {food: "Fish"}});
+                    });
+
+                    it("Should set a done handler", function () {
+                        extensions.jqRequest({method: "GET", url: "http://api.github.com", data: {food: "Beef"}});
+                        expect(doneSpy).toHaveBeenCalledWith();
+                    });
+
+                    it("Should set a fail handler", function () {
+                        extensions.jqRequest({method: "GET", url: "http://api.github.com/v3", data: {food: "Chinese"}});
+                        expect(failSpy).toHaveBeenCalled();
+                    });
+
+                    it("Should be able to make a request with a request transformer", function () {
+                        var transformRequestSpy = jasmine.createSpy().andReturn('This is a transformed request');
+                        extensions.jqRequest({method: "GET", url: "http://api.github.com", data: {food: "Fish"}, transformRequest: transformRequestSpy});
+                        expect(transformRequestSpy).toHaveBeenCalledWith({food: "Fish"});
+                        expect(ajaxSpy).toHaveBeenCalledWith({type: "GET", url: "http://api.github.com", data: 'This is a transformed request'});
+                    });
+
+                    it("Should be able to resolve data", function () {
+                        extensions.jqRequest({method: "GET", url: "http://api.github.com"});
+                        expect(deferredResolveSpy).toHaveBeenCalledWith(response);
+                    });
+
+                    it("Should be able to resolve data with a response tranformer", function () {
+                        var transformResponseSpy = jasmine.createSpy().andReturn("This is tranformed!");
+                        extensions.jqRequest({method: "GET", url: "http://api.github.com", transformResponse: transformResponseSpy});
+                        expect(deferredResolveSpy).toHaveBeenCalledWith("This is tranformed!");
+                    });
+                });
+            });
+
             afterEach(function () {
                 $.ajax = jqAjax;
             });
+
+
         });
     });
 });
