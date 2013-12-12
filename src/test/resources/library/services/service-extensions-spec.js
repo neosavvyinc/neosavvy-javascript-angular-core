@@ -1,4 +1,4 @@
-describe("nsServiceExtensions", function () {
+ddescribe("nsServiceExtensions", function () {
     var extensions, $httpSpy, successMethod, errorMethod, deferredResolveSpy, deferredRejectSpy, additionalSuccessSpy, additionalErrorSpy;
 
     beforeEach(module(function ($provide) {
@@ -29,7 +29,7 @@ describe("nsServiceExtensions", function () {
     }));
 
     beforeEach(function () {
-        module.apply(module, ['neosavvy.angularcore.services']);
+        module('neosavvy.angularcore.services');
 
         inject(function ($injector) {
             extensions = $injector.get('nsServiceExtensions');
@@ -112,17 +112,17 @@ describe("nsServiceExtensions", function () {
             qSpy = spyOn(Q, 'defer').andReturn({promise: "This is my promise!", resolve: deferredResolveSpy, reject: deferredRejectSpy});
             cacheSpy = jasmine.createSpyObj('cacheSpy', ['get', 'put']);
             cacheSpy.get = cacheSpy.get.andReturn(["Status", "My response text", "Headers"]);
-            window.XMLHttpRequest = function() {
+            window.XMLHttpRequest = function () {
                 this.open = jasmine.createSpy();
                 this.send = jasmine.createSpy();
                 this.readyState = 4;
                 myXhrRequest = this;
             };
             window.XMLHttpRequest.prototype = {
-                getAllResponseHeaders: function() {
+                getAllResponseHeaders: function () {
                     "This is your header fool!";
                 },
-                getResponseHeader: function() {
+                getResponseHeader: function () {
                     return 'application/json';
                 }
             };
@@ -197,7 +197,7 @@ describe("nsServiceExtensions", function () {
         });
 
         it("Should parse the response via json if the application response is json", function () {
-            myXhrRequest.getResponseHeader = function() {
+            myXhrRequest.getResponseHeader = function () {
                 return 'application/json';
             };
             var jsonSpy = spyOn(JSON, 'parse');
@@ -215,11 +215,11 @@ describe("nsServiceExtensions", function () {
             myXhrRequest.responseText = '{"name":"Here is your response fool!"}';
             myXhrRequest.status = 200;
             myXhrRequest.onreadystatechange();
-            expect(deferredResolveSpy).toHaveBeenCalledWith({name:"Here is your response fool!"}, 200, undefined);
+            expect(deferredResolveSpy).toHaveBeenCalledWith({name: "Here is your response fool!"}, 200, undefined);
         });
 
         it("Should call the deferred.reject if the status is 200", function () {
-            myXhrRequest.getAllResponseHeaders = function() {
+            myXhrRequest.getAllResponseHeaders = function () {
                 "Here is your header fool!";
             };
             extensions.xhr({method: 'GET', url: 'http://www.neosavvy.co.uk'});
@@ -237,6 +237,56 @@ describe("nsServiceExtensions", function () {
 
         it("Should return the deferred.promise", function () {
             expect(extensions.xhr({method: 'POST', url: 'http://www.google.com/numbers'})).toEqual("This is my promise!");
+        });
+    });
+
+    describe("jqRequest", function () {
+        var qSpy, $qSpy, cacheSpy, deferredResolveSpy, deferredRejectSpy;
+
+        beforeEach(function () {
+            deferredResolveSpy = jasmine.createSpy();
+            deferredRejectSpy = jasmine.createSpy();
+            qSpy = spyOn(Q, 'defer').andReturn({promise: "This is a promise!", resolve: deferredResolveSpy, reject: deferredRejectSpy});
+            cacheSpy = jasmine.createSpyObj('cacheSpy', ['get', 'put']);
+            cacheSpy.get = cacheSpy.get.andReturn(["Status", "My cached response text", "Headers"]);
+            inject(function ($q) {
+                $qSpy = spyOn($q, 'defer').andReturn({promise: "This is a $promise!", resolve: deferredResolveSpy, reject: deferredRejectSpy});
+            });
+        });
+
+        it("Should throw an error when called without a method param", function () {
+            expect(function () {
+                extensions.jqRequest({url: "http://api.github.com"});
+            }).toThrow();
+        });
+
+        it("Should throw an error when called without a url parameter", function () {
+            expect(function () {
+                extensions.jqRequest({method: "GET"});
+            }).toThrow();
+        });
+
+        it("Should call Q.defer in the default case", function () {
+            extensions.jqRequest({method: "GET", url: "http://api.github.com"});
+            expect(qSpy).toHaveBeenCalledWith();
+        });
+
+        it("Should call $q.defer if specified to do so in the params", function () {
+            extensions.jqRequest({method: "GET", url: "http://api.github.com", $q: true});
+            expect($qSpy).toHaveBeenCalledWith();
+        });
+
+        it("Should return the response from the cache if exists for the params", function () {
+            extensions.jqRequest({method: "GET", url: "http://api.github.com", cache: cacheSpy});
+            expect(cacheSpy.get).toHaveBeenCalledWith("http://api.github.com");
+            expect(deferredResolveSpy).toHaveBeenCalledWith("My cached response text");
+        });
+
+        it("Should be able to define a cache and not find anything", function () {
+            cacheSpy.get = cacheSpy.get.andReturn(null);
+            extensions.jqRequest({method: "GET", url: "http://api.github.com", cache: cacheSpy});
+            expect(cacheSpy.get).toHaveBeenCalledWith("http://api.github.com");
+            expect(deferredResolveSpy).not.toHaveBeenCalledWith("My cached response text");
         });
     });
 });
