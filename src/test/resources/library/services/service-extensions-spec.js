@@ -266,13 +266,13 @@ describe("nsServiceExtensions", function () {
             }).toThrow();
         });
 
-        it("Should call Q.defer in the default case", function () {
-            extensions.jqRequest({method: "GET", url: "http://api.github.com"});
+        it("Should call Q.defer in the specified case", function () {
+            extensions.jqRequest({method: "GET", url: "http://api.github.com", q: true});
             expect(qSpy).toHaveBeenCalledWith();
         });
 
-        it("Should call $q.defer if specified to do so in the params", function () {
-            extensions.jqRequest({method: "GET", url: "http://api.github.com", $q: true});
+        it("Should call $q.defer in the default case", function () {
+            extensions.jqRequest({method: "GET", url: "http://api.github.com"});
             expect($qSpy).toHaveBeenCalledWith();
         });
 
@@ -290,12 +290,12 @@ describe("nsServiceExtensions", function () {
         });
 
         it("Should return the Q promise", function () {
-            var promise = extensions.jqRequest({method: "POST", url: "http://api.github.com"});
+            var promise = extensions.jqRequest({method: "POST", url: "http://api.github.com", q: true});
             expect(promise).toEqual("This is a promise!");
         });
 
         it("Should return the $q promise", function () {
-            var promise = extensions.jqRequest({method: "PUT", url: "http://api.github.com", $q: true});
+            var promise = extensions.jqRequest({method: "PUT", url: "http://api.github.com"});
             expect(promise).toEqual("This is a $promise!");
         });
 

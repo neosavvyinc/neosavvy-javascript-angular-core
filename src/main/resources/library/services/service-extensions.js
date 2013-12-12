@@ -184,7 +184,8 @@ Neosavvy.AngularCore.Services.factory('nsServiceExtensions',
                         throw "You must provide a url for each service request.";
                     }
 
-                    var deferred = (params.$q) ? $q.defer() : Q.defer();
+                    //use Angular $q by default, big Q if specified
+                    var deferred = (params.q) ? Q.defer() : $q.defer();
 
                     var cached = getFromCache(params);
                     if (cached) {
