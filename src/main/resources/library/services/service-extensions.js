@@ -193,10 +193,10 @@ Neosavvy.AngularCore.Services.factory('nsServiceExtensions',
                     } else {
                         var request = {type: params.method, url: params.url};
                         if (params.data) {
-                            request[data] = params.transformRequest ? params.transformRequest(data) : data;
+                            request.data = params.transformRequest ? params.transformRequest(params.data) : params.data;
                         }
-                        var jqXhr = $.ajax(request)
-                            .done(function (data) {
+                        var jqXhr = $.ajax(request);
+                        jqXhr.done(function (data) {
                                 if (params.transformResponse) {
                                     data = params.transformResponse(
                                         jqXhr.responseText);
