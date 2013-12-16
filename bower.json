@@ -26,6 +26,7 @@
         "jquery": "2.0.3",
         "jQuery.XDomainRequest": "*",
         "angular": "1.2.4",
+        "angular-route": "1.2.4",
         "angular-cache": "1.2.0",
         "neosavvy-javascript-core": "0.0.5"
     },
