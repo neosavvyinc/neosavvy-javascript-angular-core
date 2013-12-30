@@ -1,4 +1,4 @@
-ddescribe("nsCollectionKeyedNumericExpression", function () {
+describe("nsCollectionKeyedNumericExpression", function () {
     var filter;
 
     beforeEach(function () {

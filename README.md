@@ -8,7 +8,7 @@ Required styles for nsModal are available in ```src/main/resources/styles/scss/m
 In order for nsModal to work properly, you must included the compiled CSS from this file in
 your application.
 
-### 0.1.4 - 11/20/2013
+### 0.1.5 - 11/20/2013
 
 Initial release.
 
