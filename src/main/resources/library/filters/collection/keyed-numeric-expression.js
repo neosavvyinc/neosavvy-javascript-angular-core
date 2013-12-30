@@ -1,6 +1,6 @@
 /**
  * @ngdoc filter
- * @name neosavvy.angularcore.filters:nsCollectionNumericExpression
+ * @name neosavvy.angularcore.filters:nsCollectionKeyedNumericExpression
  * @function
  *
  * @description
@@ -8,7 +8,7 @@
  *
  * Example of the inputs:
  *   data: [[{val: 1}, {val: 3}], [{val: 4}, {val: 5}], [{val: 1}, {val: 7}]]
- *   expressionAndIndexes: ['', '> 4']
+ *   propertyToExpressions: {val: '!=3'}
  *   property: 'val'
  *
  * Will return
@@ -17,7 +17,7 @@
  *
  * @example
  * <pre>
- * <input ng-model={{someCollection | nsCollectionNumericExpression : expressionsOnTheScope : 'name'}}/>
+ * <input ng-model={{someCollection | nsCollectionKeyedNumericExpression : expressionsOnTheScope : 'name'}}/>
  * </pre>
  */
 Neosavvy.AngularCore.Filters.filter('nsCollectionKeyedNumericExpression', ['$parse', function ($parse) {
