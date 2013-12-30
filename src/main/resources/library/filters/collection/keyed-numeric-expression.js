@@ -4,7 +4,7 @@
  * @function
  *
  * @description
- * Allows filtering for a collection based on the index of a propert and the numeric expression that corresponds to it.
+ * Allows filtering for a collection based on the index of a property and the numeric expression that corresponds to it.
  *
  * Example of the inputs:
  *   data: [[{val: 1}, {val: 3}], [{val: 4}, {val: 5}], [{val: 1}, {val: 7}]]
