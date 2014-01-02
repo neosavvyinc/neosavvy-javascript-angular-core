@@ -1,4 +1,4 @@
-ddescribe("nsRetrieveElement", function () {
+describe("nsRetrieveElement", function () {
     var $rootScope,
         $scope,
         $compile,
