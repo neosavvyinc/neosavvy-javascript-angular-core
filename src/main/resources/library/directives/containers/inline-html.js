@@ -3,20 +3,24 @@ Neosavvy.AngularCore.Directives
         ['$compile',
             function ($compile) {
                 return {
-                    restrict:'E',
+                    restrict:'ECA',
                     template:'<div></div>',
                     replace:true,
                     scope:false,
                     link:function (scope, element, attrs) {
-                        if (!attrs.hasOwnProperty('value')) {
-                            throw 'You must provide an html value on the scope in order to bind inline html!';
+                        var dereg, watchStatement = function (val) {
+                            if (val) {
+                                var thing = $compile(element.replaceWith(val))(scope);
+                                dereg();
+                            }
+                        };
+
+                        if (attrs.nsInlineHtml !== undefined) {
+                            dereg = attrs.$observe('nsInlineHtml', watchStatement);
+                        } else if (attrs.value !== undefined) {
+                            dereg = attrs.$observe('value', watchStatement);
                         } else {
-                            var dereg = attrs.$observe('value', function (val) {
-                              if (val) {
-                                  var thing = $compile(element.replaceWith(val))(scope);
-                                  dereg();
-                              }
-                            });
+                            throw 'You must provide an html nsInlineHtml or value on the scope in order to bind inline html!';
                         }
                     }
                 }
