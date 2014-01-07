@@ -28,7 +28,7 @@
         "angular": "1.2.4",
         "angular-route": "1.2.4",
         "angular-cache": "1.2.0",
-        "neosavvy-javascript-core": "0.0.5"
+        "neosavvy-javascript-core": "0.0.6"
     },
     "devDependencies": {
         "angular-animate": "1.2.4",
