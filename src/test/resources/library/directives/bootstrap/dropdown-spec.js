@@ -1,6 +1,7 @@
 ddescribe("nsBootstrapDropdown", function () {
     var $rootScope,
         $scope,
+        $compile,
         directiveScope,
         el,
         elWithLabelField,
@@ -11,9 +12,10 @@ ddescribe("nsBootstrapDropdown", function () {
     beforeEach(function () {
         module.apply(this, Neosavvy.AngularCore.Dependencies);
 
-        inject(function ($injector, $compile) {
+        inject(function ($injector, _$compile_) {
             $rootScope = $injector.get('$rootScope');
             $scope = $rootScope.$new();
+            $compile = _$compile_;
             $scope.myItems = [];
             el = $compile(angular.element(simpleHtml))($scope);
             elWithLabelField = $compile(angular.element(labelFieldHtml))($scope);
@@ -37,7 +39,13 @@ ddescribe("nsBootstrapDropdown", function () {
         }
     });
 
-    it("Should be able to list out the items int he dropdown with a labelField", function () {
-        $scope.myItems = [{name: "Tony", age: 47}]
+    it("Should be able to list out the items int the dropdown with a labelField", function () {
+        el = $compile(angular.element(labelFieldHtml))($scope);
+        $scope.myItems = [{name: "Tony", age: 47}, {name: "Steve", age: 89}];
+        $scope.$digest();
+        var elements = el.find('ul').find('a');
+        for (var i = 0; i < elements.length; i++) {
+            expect(elements[i].innerText).toEqual(String($scope.myItems[i].age));
+        }
     });
 });

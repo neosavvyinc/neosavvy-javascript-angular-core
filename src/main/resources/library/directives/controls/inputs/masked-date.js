@@ -1,7 +1,6 @@
 Neosavvy.AngularCore.Directives
     .directive('nsMaskedDateInput',
-        ['$filter',
-            function ($filter) {
+            function () {
                 return {
                     restrict: 'E',
                     replace: true,
@@ -37,4 +36,4 @@ Neosavvy.AngularCore.Directives
                         };
                     }
                 }
-            }]);
+            });
