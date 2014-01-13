@@ -16,10 +16,8 @@ Neosavvy.AngularCore.Directives
                                   var thing = $compile(element.replaceWith(val))(scope);
                                   dereg();
                               }
-                              
                             });
                         }
-                        
                     }
                 }
             }]);

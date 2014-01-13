@@ -164,6 +164,56 @@ Neosavvy.AngularCore.Services.factory('nsServiceExtensions',
                     }
 
                     return deferred.promise;
+                },
+                /**
+                 * @ngdoc method
+                 * @name neosavvy.angularcore.services.services:nsServiceExtensions#jqRequest
+                 * @methodOf neosavvy.angularcore.services.services:nsServiceExtensions
+                 *
+                 * @description
+                 * ThejQuery xDomain supporting request method helper with error handling, transformers, and added response handlers.
+                 *
+                 * @param {Object} params all service params
+                 * @returns {Promise} Q promise object
+                 */
+                jqRequest: function(params) {
+                    if (!params.method) {
+                        throw "You must provide a method for each service request.";
+                    }
+                    if (!params.url) {
+                        throw "You must provide a url for each service request.";
+                    }
+
+                    //use Angular $q by default, big Q if specified
+                    var deferred = (params.q) ? Q.defer() : $q.defer();
+
+                    var cached = getFromCache(params);
+                    if (cached) {
+                        //cached[0] is status, cached[1] is response, cached[2] is headers
+                        deferred.resolve(cached[1]);
+                    } else {
+                        var request = {type: params.method, url: params.url};
+                        if (params.data) {
+                            request.data = params.transformRequest ? params.transformRequest(params.data) : params.data;
+                        }
+                        if (params.ajax) {
+                            request = _.merge(request, params.ajax);
+                        }
+                        var jqXhr = $.ajax(request);
+                        jqXhr.done(function (data) {
+                                if (params.transformResponse) {
+                                    //responseJSON for IE9 compatibility
+                                    data = params.transformResponse(
+                                        jqXhr.responseText || JSON.stringify(jqXhr.responseJSON));
+                                }
+                                deferred.resolve(data);
+                            })
+                            .fail(function(data) {
+                                deferred.reject(data);
+                            });
+                    }
+
+                    return deferred.promise;
                 }
             };
         }]);

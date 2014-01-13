@@ -1,6 +1,6 @@
 {
-    "name": "neosavvy-javascript-angular-core",
-    "version": "0.1.1",
+    "name": "neosavvy-javascript-angular-core-development",
+    "version": "0.1.6",
     "authors": [
         "Neosavvy, Inc."
     ],
@@ -24,8 +24,9 @@
     "dependencies": {
         "q": "0.9.7",
         "jquery": "2.0.3",
-        "jquery.maskedinput": "1.3.1",
+        "jQuery.XDomainRequest": "*",
         "angular": "1.2.4",
+        "angular-route": "1.2.4",
         "angular-cache": "1.2.0",
         "neosavvy-javascript-core": "0.0.5"
     },

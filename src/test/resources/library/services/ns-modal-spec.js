@@ -3,18 +3,18 @@ describe('nsModal service', function () {
     var nsModal,
         rootScope,
         $document,
-        httpBackend,
+        $http,
         templateCache;
 
     beforeEach(function () {
         module.apply(module, ['neosavvy.angularcore.services']);
 
-        inject(function($injector, $rootScope, $httpBackend) {
+        inject(function($injector, $rootScope, _$http_) {
             nsModal = $injector.get('nsModal');
             rootScope = $rootScope;
             $document = $injector.get('$document');
+            $http = _$http_;
             templateCache = $injector.get('$templateCache');
-            httpBackend = $httpBackend;
         });
     });
 
@@ -35,7 +35,7 @@ describe('nsModal service', function () {
 
             expect(params.length).toEqual(3);
             expect(params[0]).toEqual('scope');
-            expect(params[1]).toEqual('templateUrl');
+            expect(params[1]).toEqual('template');
             expect(params[2]).toEqual('closeCallback');
         });
 
@@ -45,7 +45,7 @@ describe('nsModal service', function () {
             function errorWrapper () {
                 nsModal.open(myScope, 'template.html');
             }
-            
+
             myScope = undefined
             expect(errorWrapper).toThrow('missing scope parameter');
 
@@ -56,28 +56,44 @@ describe('nsModal service', function () {
             expect(errorWrapper).toThrow('missing scope parameter');
         });
 
-        it('should throw an error if a valid templateUrl is not passed in', function () {
-            var templateUrl;
+        it('should throw an error if the template parameter is not a string or object', function () {
+            expect(function () {
+                nsModal.open(rootScope, true);
+            }).toThrow();
+        });
+
+        it('should throw an error if a valid template is not passed in', function () {
+            var template;
 
             function errorWrapper () {
-                nsModal.open(rootScope, templateUrl)
+                nsModal.open(rootScope, template)
             }
 
-            templateUrl = undefined;
+            template = undefined;
             expect(errorWrapper).toThrow('missing template parameter');
 
-            templateUrl = null;
-            expect(errorWrapper).toThrow('missing template parameter');
-
-            templateUrl = {};
+            template = null;
             expect(errorWrapper).toThrow('missing template parameter');
         });
 
         describe('opening the modal', function () {
+            var $timeout;
             beforeEach(function () {
                 $document.find('.modal-backdrop').remove();
                 $document.find('.modal-overlay').remove();
-                templateCache.put('myTemplate.html', angular.element('<div>myTemplate</div>'));
+                inject(function (_$timeout_) {
+                    $timeout = _$timeout_;
+                });
+            });
+
+            it('should add an ng-include for a template if the template url is passed in', function () {
+                 var httpSpy = spyOn($http, 'get').andReturn({success: function () {
+                     return { error: function  () { }};
+                 }});
+
+                 nsModal.open(rootScope, '1/2/3/fake/path.html');
+                 rootScope.$digest();
+                 expect(httpSpy).toHaveBeenCalledWith('1/2/3/fake/path.html', { cache: templateCache });
             });
 
             it('should append the backdrop to the DOM', function () {
@@ -85,8 +101,8 @@ describe('nsModal service', function () {
                 expect($document.find('.modal-backdrop').length).toEqual(0);
                 expect($document.find('.modal-overlay').length).toEqual(0);
 
-                nsModal.open(rootScope, 'myTemplate.html');
-
+                nsModal.open(rootScope, angular.element('<div>myTemplate.html</div>'));
+                $timeout.flush();
                 expect($document.find('.modal-backdrop').length).toEqual(1);
             });
 
@@ -95,18 +111,18 @@ describe('nsModal service', function () {
                 expect($document.find('.modal-backdrop').length).toEqual(0);
                 expect($document.find('.modal-overlay').length).toEqual(0);
 
-                nsModal.open(rootScope, 'myTemplate.html');
+                nsModal.open(rootScope, angular.element('<div>myTemplate.html</div>'));
 
                 rootScope.$apply();
-                    
+                $timeout.flush(); 
                 expect($document.find('.modal-overlay').length).toEqual(1);
             });
         });
-        
 
     });
-    
+
     describe('nsModal.close', function () {
+        var $timeout;
         it('should be defined as a function', function () {
             expect(nsModal.close).toBeDefined();
             expect(typeof nsModal.close).toEqual('function');
@@ -118,23 +134,24 @@ describe('nsModal service', function () {
             beforeEach(function () {
                 $document.find('.modal-backdrop').remove();
                 $document.find('.modal-overlay').remove();
-                templateCache.put('myTemplate.html', angular.element('<div>myTemplate</div>'));
+                inject(function (_$timeout_) {
+                    $timeout = _$timeout_;
+                });
             });
 
             it('should remove the modal from the page', function () {
 
                 expect($document.find('.modal-backdrop').length).toEqual(0);
 
-                nsModal.open(rootScope, 'myTemplate.html');
+                nsModal.open(rootScope, angular.element('<div>myTemplate.html</div>'));
                 rootScope.$apply();
-
+                $timeout.flush();
                 expect($document.find('.modal-backdrop').length).toEqual(1);
 
                 nsModal.close();
                 rootScope.$apply();
-
+                $timeout.flush();
                 expect($document.find('.modal-backdrop').length).toEqual(0);
-                    
             });
 
             it('should call the close callback', function () {
@@ -142,19 +159,30 @@ describe('nsModal service', function () {
 
                 var spyFn = jasmine.createSpy('myFn');
 
-                nsModal.open(rootScope, 'myTemplate.html', spyFn);
+                nsModal.open(rootScope, angular.element('myTemplate.html'), spyFn);
                 rootScope.$apply();
+                $timeout.flush();
 
                 expect($document.find('.modal-backdrop').length).toEqual(1);
 
                 nsModal.close();
                 rootScope.$apply();
+                $timeout.flush();
 
                 expect(spyFn).toHaveBeenCalled();
             });
+
+            it('should not call the close callback if modal is not open', function () {
+                expect($document.find('.modal-backdrop').length).toEqual(0);
+
+                var spyFn = jasmine.createSpy('myFn');
+
+                nsModal.close();
+                rootScope.$apply();
+
+                expect(spyFn).not.toHaveBeenCalled();
+            });
         });
-        
     });
-    
 });
 
