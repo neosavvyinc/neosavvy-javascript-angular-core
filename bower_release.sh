@@ -14,11 +14,11 @@ grunt
 git tag $TAG
 git push --tags
 
-cp target/*.js ../bower-neosavvy-javascript-core
-cp bower.json ../bower-neosavvy-javascript-core
-sed -i.bak "s/neosavvy-javascript-core-development/neosavvy-javascript-core/g" ../bower-neosavvy-javascript-core/bower.json
-rm ../bower-neosavvy-javascript-core/bower.json.bak
-cd ../bower-neosavvy-javascript-core
+cp target/*.js ../bower-neosavvy-javascript-angular-core
+cp bower.json ../bower-neosavvy-javascript-angular-core
+sed -i.bak "s/neosavvy-javascript-angular-core-development/neosavvy-javascript-angular-core/g" ../bower-neosavvy-javascript-angular-core/bower.json
+rm ../bower-neosavvy-javascript-angular-core/bower.json.bak
+cd ../bower-neosavvy-javascript-angular-core
 git add .
 git commit -am "Version $TAG"
 git push
