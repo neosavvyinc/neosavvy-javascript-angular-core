@@ -8,3 +8,4 @@ docs
 coverage
 bower_components
 src/main/resources/lib
+quick_push.sh
