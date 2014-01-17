@@ -131,13 +131,20 @@ Modal with open handler and optional close handler, closes on route change,
 Static include remote templates, lazy load on demand,
 
     //Wait for timeout
-    <ns-static-include wait-for="500" src="some/path/to/remote.html></ns-static-include>
+    <ns-static-include wait-for="500"
+        src="some/path/to/remote.html></ns-static-include>
+
     //Wait for flag (lazy load)
-    <ns-static-include watch-wait-for="someFlagOnScope" src="some/path/to/remote.html></ns-static-include>
+    <ns-static-include watch-wait-for="someFlagOnScope"
+        src="some/path/to/remote.html></ns-static-include>
+
     //Wait for timeout to render, not request
-    <ns-static-include wait-for-render="500" src="some/path/to/remote.html></ns-static-include>
+    <ns-static-include wait-for-render="500"
+        src="some/path/to/remote.html></ns-static-include>
+        
     //Wait for flag to render, not request
-    <ns-static-include watch-wait-for-render="someFlagOnScope" src="some/path/to/remote.html></ns-static-include>
+    <ns-static-include watch-wait-for-render="someFlagOnScope"
+        src="some/path/to/remote.html></ns-static-include>
 
 
 ## Notes on nsModal
