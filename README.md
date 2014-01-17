@@ -282,7 +282,7 @@ $scope.page = 0;;
 ```
 
 ```HTML
-<!-- Will show paginated date, can be incremented via controller -->
+<!-- Will show 50 elements per page, paginated date, can be incremented via controller -->
 <label ng-repeat="myCollection | nsCollectionPage : page : 50"></label>
 ```
 
