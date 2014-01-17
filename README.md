@@ -186,6 +186,21 @@ Serialize data loaded into the DOM,
     inject="myNgFactory"></ns-serialize>
 ```
 
+Watch any jQuery or Zepto event,
+
+```HTML
+<!-- On Element -->
+<input ns-event="blur, onBlur()">
+
+<!-- On Sub Element -->
+<div ns-event="click, onMultiClick(), a, .special">
+  <a>Will Be Clicked</a>
+  <a>Will Be Clicked</a>
+  <button>Will Not Be Clicked</button>
+  <button class="special>Will Be Clicked</button>
+</div>
+```
+
 
 ## Notes on nsModal
 Required styles for nsModal are available in ```src/main/resources/styles/scss/modals.scss```.
