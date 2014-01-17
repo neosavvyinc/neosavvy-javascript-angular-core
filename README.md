@@ -218,6 +218,27 @@ Only require input when shown,
 ```
 
 
+## neosavvy.angularcore.filters
+
+### Collection
+
+Filter based on an 'or' case of available properties,
+
+```JavaScript
+$scope.myCollection = [
+  {city: {name: "Omaha"}},
+  {city: {name: "Chicago"}},
+  {city: {name: "Boston"}}
+];
+
+$scope.wantedCities = ["Omaha", "Boston"];
+```
+
+```HTML
+<!-- Will show Omaha and Boston -->
+<label ng-repeat="myCollection | nsCollectionFilterProperties : 'city.name' : wantedCities"></label>
+```
+
 ## Notes on nsModal
 Required styles for nsModal are available in ```src/main/resources/styles/scss/modals.scss```.
 In order for nsModal to work properly, you must included the compiled CSS from this file in
