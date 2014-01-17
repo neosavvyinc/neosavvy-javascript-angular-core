@@ -93,6 +93,29 @@ Define controller analytics at runtime,
             }]);
 
 
+## neosavvy.angularcore.controllers
+
+Access controllers created in the dom at runtime, by name, by DOM id, by scope, and last,
+
+    <div ng-controller="TomController" id="tom-controller-1"> ... </div>
+    <div ng-controller="TomController" id="tom-controller-2"> ... </div>
+    <div ng-controller="TomController" id="tom-controller-3"> ... </div>
+    <div ng-controller="TomController" id="tom-controller-4"> ... </div>
+
+    angular.module('app')
+        .controller('MyController',
+            ['$scope', 'nsControllers', function($scope, nsControllers) {
+
+              var allTomControllers = nsControllers.get('TomController');
+              var tomControllerThree = nsControllers.getById('tom-controller-3');
+              var tomControllerByScope = nsControllers.getByScope('#3F');
+              var lastTomController = nsController.getLast();
+
+            }]);
+
+
+
+
 ## Notes on nsModal
 Required styles for nsModal are available in ```src/main/resources/styles/scss/modals.scss```.
 In order for nsModal to work properly, you must included the compiled CSS from this file in
