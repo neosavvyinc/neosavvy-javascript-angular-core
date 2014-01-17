@@ -413,7 +413,7 @@ your application.
 Thank you for use, forks, and pull requests.
 
 
-### 0.1.7 - 01/17/2014
+### 0.1.8 - 01/17/2014
 
 Initial release.
 

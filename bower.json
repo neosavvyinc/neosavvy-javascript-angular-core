@@ -1,6 +1,6 @@
 {
     "name": "neosavvy-javascript-angular-core-development",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "authors": [
         "Neosavvy, Inc."
     ],
@@ -28,7 +28,7 @@
         "angular": "1.2.4",
         "angular-route": "1.2.4",
         "angular-cache": "1.2.0",
-        "neosavvy-javascript-core": "0.0.5"
+        "neosavvy-javascript-core": "0.0.7"
     },
     "devDependencies": {
         "angular-animate": "1.2.4",
