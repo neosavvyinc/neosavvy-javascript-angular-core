@@ -201,6 +201,22 @@ Watch any jQuery or Zepto event,
 </div>
 ```
 
+Only watch model changes on 'blur' event,
+
+```HTML
+<input ns-model-on-blur="myModel">
+```
+
+Only require input when shown,
+
+```HTML
+<!-- Not required for validation -->
+<input ns-required-if-shown ng-show="false">
+
+<!-- Required for validation -->
+<input ns-required-if-shown ng-show="true">
+```
+
 
 ## Notes on nsModal
 Required styles for nsModal are available in ```src/main/resources/styles/scss/modals.scss```.
