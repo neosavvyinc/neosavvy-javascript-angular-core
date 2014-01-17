@@ -8,6 +8,33 @@ Via bower,
 
   `bower install neosavvy-javascript-angular-core`
 
+#Development Version,
+
+Install all through npm
+
+  `npm install`
+
+Install bower
+
+  `sudo npm -g install bower`
+
+Install Grunt
+
+  `sudo npm -g install grunt-cli`
+
+Scripts dependencies
+
+  `bower install`
+
+
+To compile source code,
+
+    `grunt`
+
+To run unit tests while developing,
+
+    `grunt karma:unit`
+
 
 ## Notes on nsModal
 Required styles for nsModal are available in ```src/main/resources/styles/scss/modals.scss```.
