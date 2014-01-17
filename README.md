@@ -308,8 +308,15 @@ Clamp numbers between min or max,
 Clear out certain words,
 
 ```HTML
-<!-- Min at 5, Max at 25 -->
+<!-- As many arguments as you want -->
 <p ng-bind="message | nsTextReplace : 'government' : 'shutdown' : 'redacted'"></p>
+```
+
+Programatic truncate,
+
+```HTML
+<!-- Will show 55 characters + '...' -->
+<p ng-bind="message | nsTruncate : 55"></p>
 ```
 
 
