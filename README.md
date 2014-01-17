@@ -168,6 +168,24 @@ Static include remote templates, lazy load on demand,
     src="some/path/to/remote.html"></ns-static-include>
 ```
 
+Serialize data loaded into the DOM,
+
+```HTML
+<!-- Scope Property -->
+<ns-serialize data="{'name':'George', 'age':'62'}" property="myVarOnScope"></ns-serialize>
+
+<!-- Scope Function -->
+<ns-serialize data="{'name':'George', 'age':'62'}" property="myFn()"></ns-serialize>
+
+<!-- Injected Value Property -->
+<ns-serialize data="{'name':'George', 'age':'62'}" property="someProp"
+    inject="myNgValue"></ns-serialize>
+
+<!-- Injected Value Function -->
+<ns-serialize data="{'name':'George', 'age':'62'}" property="someFn()"
+    inject="myNgFactory"></ns-serialize>
+```
+
 
 ## Notes on nsModal
 Required styles for nsModal are available in ```src/main/resources/styles/scss/modals.scss```.
