@@ -3,12 +3,417 @@ javascript-angular-core
 
 Neosavvy, Inc. core libraries for angular js.
 
-## Notes on nsModal
+## Getting Started
+Via bower,
+
+    bower install neosavvy-javascript-angular-core
+
+###Development Version,
+
+Install all through npm,
+
+    npm install
+
+Install bower,
+
+    sudo npm -g install bower
+
+Install Grunt,
+
+    sudo npm -g install grunt-cli
+
+Scripts dependencies,
+
+    bower install
+
+
+To compile source code,
+
+    grunt
+
+To run unit tests while developing,
+
+    grunt karma:unit
+
+## Modules
+
+```JavaScript
+var Neosavvy = Neosavvy || {};
+Neosavvy.AngularCore = Neosavvy.AngularCore || {};
+
+Neosavvy.AngularCore.Analytics = angular.module('neosavvy.angularcore.analytics', []);
+Neosavvy.AngularCore.Controllers = angular.module('neosavvy.angularcore.controllers', []);
+Neosavvy.AngularCore.Directives = angular.module('neosavvy.angularcore.directives', []);
+Neosavvy.AngularCore.Filters = angular.module('neosavvy.angularcore.filters', []);
+Neosavvy.AngularCore.Services = angular.module('neosavvy.angularcore.services', []);
+
+Neosavvy.AngularCore.Dependencies = [
+'neosavvy.angularcore.analytics',
+'neosavvy.angularcore.controllers',
+'neosavvy.angularcore.directives',
+'neosavvy.angularcore.filters',
+'neosavvy.angularcore.services'
+];
+```
+
+## neosavvy.angularcore.analytics
+
+Define your global analytics callback with the provider at config time,
+
+```JavaScript
+angular.module('app')
+    .config(['nsAnalyticsProvider', function (nsAnalyticsProvider) {
+
+        //Provider Setup
+        nsAnalyticsProvider.config({
+            callBack: function(name, options) {
+                mixpanel.track(name, options);
+                omniture.track(name, options);
+            }
+        });
+    }]);
+```
+
+
+Define controller analytics at runtime,
+
+```JavaScript
+angular.module('app')
+    .run(['nsAnalytics', function (nsAnalytics) {
+
+            //Controllers
+            nsAnalytics('ElectionCtrl', {
+                countVote: {
+                    name: "VOTE",
+                    options : {
+                        musician: "{{$scope.lastVote}}"
+                    }
+                }
+            });
+
+            nsAnalytics('ProfileCtrl', {
+                pushComment: {
+                    name: "COMMENT",
+                    options: {
+                        musician: "{{$scope.musician.name}}",
+                        comments: "{{$scope.musician.comments.length}}"
+                    }
+                }
+            });
+
+        }]);
+```
+
+
+## neosavvy.angularcore.controllers
+
+Access controllers created in the dom at runtime, by name, by DOM id, by scope, and last,
+
+```HTML
+<div ng-controller="TomController" id="tom-controller-1"> ... </div>
+<div ng-controller="TomController" id="tom-controller-2"> ... </div>
+<div ng-controller="TomController" id="tom-controller-3"> ... </div>
+<div ng-controller="TomController" id="tom-controller-4"> ... </div>
+```
+
+```JavaScript
+angular.module('app')
+    .controller('MyController',
+        ['$scope', 'nsControllers', function($scope, nsControllers) {
+
+          var allTomControllers = nsControllers.get('TomController');
+          var tomControllerThree = nsControllers.getById('tom-controller-3');
+          var tomControllerByScope = nsControllers.getByScope('#3F');
+          var lastTomController = nsController.getLast();
+
+        }]);
+```
+
+
+## neosavvy.angularcore.directives
+
+Inline html from the server,
+
+```HTML
+<ns-inline-html value="myScopeValue"></ns-inline-html>
+```
+
+
+Modal with open handler and optional close handler, closes on route change,
+
+```HTML
+<ns-modal open="openMyModalFn" close="optionalFnHere">
+    <label>My Custom Contents</label>
+</ns-modal>
+```
+
+
+Static include remote templates, lazy load on demand,
+
+```HTML
+<!-- Wait for timeout -->
+<ns-static-include wait-for="500"
+    src="some/path/to/remote.html"></ns-static-include>
+
+<!-- Wait for flag (lazy load) -->
+<ns-static-include watch-wait-for="someFlagOnScope"
+    src="some/path/to/remote.html"></ns-static-include>
+
+<!-- Wait for timeout to render, not request -->
+<ns-static-include wait-for-render="500"
+    src="some/path/to/remote.html"></ns-static-include>
+
+<!-- Wait for flag to render, not request -->
+<ns-static-include watch-wait-for-render="someFlagOnScope"
+    src="some/path/to/remote.html"></ns-static-include>
+```
+
+Serialize data loaded into the DOM,
+
+```HTML
+<!-- Scope Property -->
+<ns-serialize data="{'name':'George', 'age':'62'}" property="myVarOnScope"></ns-serialize>
+
+<!-- Scope Function -->
+<ns-serialize data="{'name':'George', 'age':'62'}" property="myFn()"></ns-serialize>
+
+<!-- Injected Value Property -->
+<ns-serialize data="{'name':'George', 'age':'62'}" property="someProp"
+    inject="myNgValue"></ns-serialize>
+
+<!-- Injected Value Function -->
+<ns-serialize data="{'name':'George', 'age':'62'}" property="someFn()"
+    inject="myNgFactory"></ns-serialize>
+```
+
+Watch any jQuery or Zepto event,
+
+```HTML
+<!-- On Element -->
+<input ns-event="blur, onBlur()">
+
+<!-- On Sub Element -->
+<div ns-event="click, onMultiClick(), a, .special">
+  <a>Will Be Clicked</a>
+  <a>Will Be Clicked</a>
+  <button>Will Not Be Clicked</button>
+  <button class="special>Will Be Clicked</button>
+</div>
+```
+
+Only watch model changes on 'blur' event,
+
+```HTML
+<input ns-model-on-blur="myModel">
+```
+
+Only require input when shown,
+
+```HTML
+<!-- Not required for validation -->
+<input ns-required-if-shown ng-show="false">
+
+<!-- Required for validation -->
+<input ns-required-if-shown ng-show="true">
+```
+
+
+## neosavvy.angularcore.filters
+
+### Collection
+
+Filter based on an 'or' case of available properties,
+
+```JavaScript
+$scope.myCollection = [
+  {city: {name: "Omaha"}},
+  {city: {name: "Chicago"}},
+  {city: {name: "Boston"}}
+];
+
+$scope.wantedCities = ["Omaha", "Boston"];
+```
+
+```HTML
+<!-- Will show Omaha and Boston -->
+<label ng-repeat="myCollection | nsCollectionFilterProperties : 'city.name' : wantedCities"></label>
+```
+
+Filter based on a single matching property,
+
+```JavaScript
+$scope.myCollection = [
+  {city: {name: "Omaha"}},
+  {city: {name: "Chicago"}},
+  {city: {name: "Boston"}}
+];
+
+$scope.wantedCity = "Chicago";
+```
+
+```HTML
+<!-- Will show Chicago -->
+<label ng-repeat="myCollection | nsCollectionFilterProperty : 'city.name' : wantedCity"></label>
+```
+
+Filter on property matching a substring,
+
+```JavaScript
+$scope.myCollection = [
+  {city: {name: "Omaha"}},
+  {city: {name: "Chicago"}},
+  {city: {name: "Boston"}}
+];
+
+$scope.wantedCity = "Oma";
+```
+
+```HTML
+<!-- Will show Omaha -->
+<label ng-repeat="myCollection | nsCollectionFilterPropertyContains : 'city.name' : wantedCity"></label>
+```
+
+Pagination filter,
+
+```JavaScript
+$scope.myCollection = [ ... ];
+
+$scope.page = 0;;
+```
+
+```HTML
+<!-- Will show 50 elements per page, paginated date, can be incremented via controller -->
+<label ng-repeat="myCollection | nsCollectionPage : page : 50"></label>
+```
+
+### Logical
+
+Filter a ternary statement,
+
+```HTML
+<a ng-class="myScopeVar | nsLogicalIf : 'my-class-true' : 'my-class-false'"></a>
+```
+
+### Numeric
+
+Clamp numbers between min or max,
+
+```HTML
+<!-- Min at 5, Max at 25 -->
+<a ng-bind="myNumberOnScope | nsNumericClamp : 5 : 25"></a>
+```
+
+## Text
+
+Clear out certain words,
+
+```HTML
+<!-- As many arguments as you want -->
+<p ng-bind="message | nsTextReplace : 'government' : 'shutdown' : 'redacted'"></p>
+```
+
+Programatic truncate,
+
+```HTML
+<!-- Will show 55 characters + '...' -->
+<p ng-bind="message | nsTruncate : 55"></p>
+```
+
+
+## neosavvy.angularcore.services
+
+Service extension interface to make a promised based $http request,
+
+```JavaScript
+var myHandlerFn = function() { ... };
+var transformerFnRequest = function() { ... };
+var transformerFnResponse = function() { ... };
+var additionalFnOnSuccess = function() { ... };
+var additionalFnOnError = function() { ... };
+
+nsServiceExtensions.request({
+    method: 'GET',
+    url: 'path/to/my/sevice.json',
+    transformRequest: transformerFnRequest,
+    transformResponse: transformerFnResponse
+  },
+  additionalFnOnSuccess,
+  additionFnOnError
+).then(myHandlerFn);
+
+```
+
+Service extension interface to make a jQuery.ajax style request,
+
+```JavaScript
+var myHandlerFn = function() { ... };
+var transformerFnRequest = function() { ... };
+var transformerFnResponse = function() { ... };
+var additionalFnOnSuccess = function() { ... };
+var additionalFnOnError = function() { ... };
+
+nsServiceExtensions.jqRequest({
+    method: 'GET',
+    url: 'path/to/my/sevice.json',
+    transformRequest: transformerFnRequest,
+    transformResponse: transformerFnResponse,
+    ajax: {
+      ... Any standard jQuery.ajax parameters here...
+    }
+  },
+  additionalFnOnSuccess,
+  additionFnOnError
+).then(myHandlerFn);
+
+```
+
+Service extension interface to make a native xhr and Q request (no lifecycle, efficient),
+
+```JavaScript
+var myHandlerFn = function() { ... };
+var transformerFnRequest = function() { ... };
+var transformerFnResponse = function() { ... };
+var additionalFnOnSuccess = function() { ... };
+var additionalFnOnError = function() { ... };
+
+nsServiceExtensions.xhr({
+    method: 'GET',
+    url: 'path/to/my/sevice.json',
+    transformRequest: transformerFnRequest,
+    transformResponse: transformerFnResponse
+  },
+  additionalFnOnSuccess,
+  additionFnOnError
+).then(myHandlerFn);
+
+```
+
+Modal service for opening modals on demand,
+
+```JavaScript
+var nsModal = $injector.get('nsModal');
+var myCloseCallback = function() { ... };
+
+//Open With String
+nsModal.open($scope, '<div><label>Some Content</label></div>', myCloseCallback);
+
+//Open With Template
+nsModal.open($scope, 'path/to/template.html', myCloseCallback);
+
+//Will close whenever you need
+$scope.close
+
+```
+
 Required styles for nsModal are available in ```src/main/resources/styles/scss/modals.scss```.
 In order for nsModal to work properly, you must included the compiled CSS from this file in
 your application.
 
-### 0.1.6 - 11/20/2013
+
+Thank you for use, forks, and pull requests.
+
+
+### 0.1.7 - 01/17/2014
 
 Initial release.
 
