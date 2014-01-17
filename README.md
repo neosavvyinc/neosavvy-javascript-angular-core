@@ -320,6 +320,76 @@ Programatic truncate,
 ```
 
 
+## neosavvy.angularcore.services
+
+Service extension interface to make a promised based $http request,
+
+```JavaScript
+var myHandlerFn = function() { ... };
+var transformerFnRequest = function() { ... };
+var transformerFnResponse = function() { ... };
+var additionalFnOnSuccess = function() { ... };
+var additionalFnOnError = function() { ... };
+
+nsServiceExtensions.request({
+    method: 'GET',
+    url: 'path/to/my/sevice.json',
+    transformRequest: transformerFnRequest,
+    transformResponse: transformerFnResponse
+  },
+  additionalFnOnSuccess,
+  additionFnOnError
+).then(myHandlerFn);
+
+```
+
+Service extension interface to make a jQuery.ajax style request,
+
+```JavaScript
+var myHandlerFn = function() { ... };
+var transformerFnRequest = function() { ... };
+var transformerFnResponse = function() { ... };
+var additionalFnOnSuccess = function() { ... };
+var additionalFnOnError = function() { ... };
+
+nsServiceExtensions.jqRequest({
+    method: 'GET',
+    url: 'path/to/my/sevice.json',
+    transformRequest: transformerFnRequest,
+    transformResponse: transformerFnResponse,
+    ajax: {
+      ... Any standard jQuery.ajax parameters here...
+    }
+  },
+  additionalFnOnSuccess,
+  additionFnOnError
+).then(myHandlerFn);
+
+```
+
+
+Service extension interface to make a native xhr and Q request (no lifecycle, efficient),
+
+```JavaScript
+var myHandlerFn = function() { ... };
+var transformerFnRequest = function() { ... };
+var transformerFnResponse = function() { ... };
+var additionalFnOnSuccess = function() { ... };
+var additionalFnOnError = function() { ... };
+
+nsServiceExtensions.xhr({
+    method: 'GET',
+    url: 'path/to/my/sevice.json',
+    transformRequest: transformerFnRequest,
+    transformResponse: transformerFnResponse
+  },
+  additionalFnOnSuccess,
+  additionFnOnError
+).then(myHandlerFn);
+
+```
+
+
 ## Notes on nsModal
 Required styles for nsModal are available in ```src/main/resources/styles/scss/modals.scss```.
 In order for nsModal to work properly, you must included the compiled CSS from this file in
