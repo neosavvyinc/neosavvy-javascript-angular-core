@@ -37,81 +37,97 @@ To run unit tests while developing,
 
 ## Modules
 
-    var Neosavvy = Neosavvy || {};
-    Neosavvy.AngularCore = Neosavvy.AngularCore || {};
+```JavaScript
+var Neosavvy = Neosavvy || {};
+Neosavvy.AngularCore = Neosavvy.AngularCore || {};
 
-    Neosavvy.AngularCore.Analytics = angular.module('neosavvy.angularcore.analytics', []);
-    Neosavvy.AngularCore.Controllers = angular.module('neosavvy.angularcore.controllers', []);
-    Neosavvy.AngularCore.Directives = angular.module('neosavvy.angularcore.directives', []);
-    Neosavvy.AngularCore.Filters = angular.module('neosavvy.angularcore.filters', []);
-    Neosavvy.AngularCore.Services = angular.module('neosavvy.angularcore.services', []);
+Neosavvy.AngularCore.Analytics = angular.module('neosavvy.angularcore.analytics', []);
+Neosavvy.AngularCore.Controllers = angular.module('neosavvy.angularcore.controllers', []);
+Neosavvy.AngularCore.Directives = angular.module('neosavvy.angularcore.directives', []);
+Neosavvy.AngularCore.Filters = angular.module('neosavvy.angularcore.filters', []);
+Neosavvy.AngularCore.Services = angular.module('neosavvy.angularcore.services', []);
 
-    Neosavvy.AngularCore.Dependencies = ['neosavvy.angularcore.analytics', 'neosavvy.angularcore.controllers', 'neosavvy.angularcore.directives', 'neosavvy.angularcore.filters', 'neosavvy.angularcore.services'];
+Neosavvy.AngularCore.Dependencies = [
+'neosavvy.angularcore.analytics',
+'neosavvy.angularcore.controllers',
+'neosavvy.angularcore.directives',
+'neosavvy.angularcore.filters',
+'neosavvy.angularcore.services'
+];
+```
 
 ## neosavvy.angularcore.analytics
 
 Define your global analytics callback with the provider at config time,
 
-    angular.module('app')
-        .config(['nsAnalyticsProvider', function (nsAnalyticsProvider) {
+```JavaScript
+angular.module('app')
+    .config(['nsAnalyticsProvider', function (nsAnalyticsProvider) {
 
-            //Provider Setup
-            nsAnalyticsProvider.config({
-                callBack: function(name, options) {
-                    mixpanel.track(name, options);
-                    omniture.track(name, options);
-                }
-            });
-        }]);
+        //Provider Setup
+        nsAnalyticsProvider.config({
+            callBack: function(name, options) {
+                mixpanel.track(name, options);
+                omniture.track(name, options);
+            }
+        });
+    }]);
+```
 
 
 Define controller analytics at runtime,
 
-    angular.module('app')
-        .run(['nsAnalytics', function (nsAnalytics) {
+```JavaScript
+angular.module('app')
+    .run(['nsAnalytics', function (nsAnalytics) {
 
-                //Controllers
-                nsAnalytics('ElectionCtrl', {
-                    countVote: {
-                        name: "VOTE",
-                        options : {
-                            musician: "{{$scope.lastVote}}"
-                        }
+            //Controllers
+            nsAnalytics('ElectionCtrl', {
+                countVote: {
+                    name: "VOTE",
+                    options : {
+                        musician: "{{$scope.lastVote}}"
                     }
-                });
+                }
+            });
 
-                nsAnalytics('ProfileCtrl', {
-                    pushComment: {
-                        name: "COMMENT",
-                        options: {
-                            musician: "{{$scope.musician.name}}",
-                            comments: "{{$scope.musician.comments.length}}"
-                        }
+            nsAnalytics('ProfileCtrl', {
+                pushComment: {
+                    name: "COMMENT",
+                    options: {
+                        musician: "{{$scope.musician.name}}",
+                        comments: "{{$scope.musician.comments.length}}"
                     }
-                });
+                }
+            });
 
-            }]);
+        }]);
+```
 
 
 ## neosavvy.angularcore.controllers
 
 Access controllers created in the dom at runtime, by name, by DOM id, by scope, and last,
 
-    <div ng-controller="TomController" id="tom-controller-1"> ... </div>
-    <div ng-controller="TomController" id="tom-controller-2"> ... </div>
-    <div ng-controller="TomController" id="tom-controller-3"> ... </div>
-    <div ng-controller="TomController" id="tom-controller-4"> ... </div>
+```HTML
+<div ng-controller="TomController" id="tom-controller-1"> ... </div>
+<div ng-controller="TomController" id="tom-controller-2"> ... </div>
+<div ng-controller="TomController" id="tom-controller-3"> ... </div>
+<div ng-controller="TomController" id="tom-controller-4"> ... </div>
+```
 
-    angular.module('app')
-        .controller('MyController',
-            ['$scope', 'nsControllers', function($scope, nsControllers) {
+```JavaScript
+angular.module('app')
+    .controller('MyController',
+        ['$scope', 'nsControllers', function($scope, nsControllers) {
 
-              var allTomControllers = nsControllers.get('TomController');
-              var tomControllerThree = nsControllers.getById('tom-controller-3');
-              var tomControllerByScope = nsControllers.getByScope('#3F');
-              var lastTomController = nsController.getLast();
+          var allTomControllers = nsControllers.get('TomController');
+          var tomControllerThree = nsControllers.getById('tom-controller-3');
+          var tomControllerByScope = nsControllers.getByScope('#3F');
+          var lastTomController = nsController.getLast();
 
-            }]);
+        }]);
+```
 
 
 ## neosavvy.angularcore.directives
@@ -125,28 +141,32 @@ Inline html from the server,
 
 Modal with open handler and optional close handler, closes on route change,
 
-    <ns-modal open="openMyModalFn" close="optionalFnHere">
-        <label>My Custom Contents</label>
-    </ns-modal>
+```HTML
+<ns-modal open="openMyModalFn" close="optionalFnHere">
+    <label>My Custom Contents</label>
+</ns-modal>
+```
 
 
 Static include remote templates, lazy load on demand,
 
-    //Wait for timeout
-    <ns-static-include wait-for="500"
-        src="some/path/to/remote.html></ns-static-include>
+```HTML
+<!-- Wait for timeout -->
+<ns-static-include wait-for="500"
+    src="some/path/to/remote.html></ns-static-include>
 
-    //Wait for flag (lazy load)
-    <ns-static-include watch-wait-for="someFlagOnScope"
-        src="some/path/to/remote.html></ns-static-include>
+<!-- Wait for flag (lazy load) -->
+<ns-static-include watch-wait-for="someFlagOnScope"
+    src="some/path/to/remote.html></ns-static-include>
 
-    //Wait for timeout to render, not request
-    <ns-static-include wait-for-render="500"
-        src="some/path/to/remote.html></ns-static-include>
+<!-- Wait for timeout to render, not request -->
+<ns-static-include wait-for-render="500"
+    src="some/path/to/remote.html></ns-static-include>
 
-    //Wait for flag to render, not request
-    <ns-static-include watch-wait-for-render="someFlagOnScope"
-        src="some/path/to/remote.html></ns-static-include>
+<!-- Wait for flag to render, not request -->
+<ns-static-include watch-wait-for-render="someFlagOnScope"
+    src="some/path/to/remote.html></ns-static-include>
+```
 
 
 ## Notes on nsModal
