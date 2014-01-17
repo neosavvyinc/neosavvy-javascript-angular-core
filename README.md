@@ -10,30 +10,30 @@ Via bower,
 
 #Development Version,
 
-Install all through npm
+Install all through npm,
 
-  `npm install`
+  npm install
 
-Install bower
+Install bower,
 
-  `sudo npm -g install bower`
+  sudo npm -g install bower
 
-Install Grunt
+Install Grunt,
 
-  `sudo npm -g install grunt-cli`
+  sudo npm -g install grunt-cli
 
-Scripts dependencies
+Scripts dependencies,
 
-  `bower install`
+  bower install
 
 
 To compile source code,
 
-    `grunt`
+    grunt
 
 To run unit tests while developing,
 
-    `grunt karma:unit`
+    grunt karma:unit
 
 
 ## Notes on nsModal
