@@ -12,19 +12,19 @@ Via bower,
 
 Install all through npm,
 
-  npm install
+    npm install
 
 Install bower,
 
-  sudo npm -g install bower
+    sudo npm -g install bower
 
 Install Grunt,
 
-  sudo npm -g install grunt-cli
+    sudo npm -g install grunt-cli
 
 Scripts dependencies,
 
-  bower install
+    bower install
 
 
 To compile source code,
