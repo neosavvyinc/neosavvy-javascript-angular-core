@@ -239,6 +239,41 @@ $scope.wantedCities = ["Omaha", "Boston"];
 <label ng-repeat="myCollection | nsCollectionFilterProperties : 'city.name' : wantedCities"></label>
 ```
 
+Filter based on a single matching property,
+
+```JavaScript
+$scope.myCollection = [
+  {city: {name: "Omaha"}},
+  {city: {name: "Chicago"}},
+  {city: {name: "Boston"}}
+];
+
+$scope.wantedCity = "Chicago";
+```
+
+```HTML
+<!-- Will show Chicago -->
+<label ng-repeat="myCollection | nsCollectionFilterProperty : 'city.name' : wantedCity"></label>
+```
+
+Filter on property matching a substring,
+
+```JavaScript
+$scope.myCollection = [
+  {city: {name: "Omaha"}},
+  {city: {name: "Chicago"}},
+  {city: {name: "Boston"}}
+];
+
+$scope.wantedCity = "Oma";
+```
+
+```HTML
+<!-- Will show Omaha -->
+<label ng-repeat="myCollection | nsCollectionFilterPropertyContains : 'city.name' : wantedCity"></label>
+```
+
+
 ## Notes on nsModal
 Required styles for nsModal are available in ```src/main/resources/styles/scss/modals.scss```.
 In order for nsModal to work properly, you must included the compiled CSS from this file in
