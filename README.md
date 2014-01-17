@@ -6,9 +6,9 @@ Neosavvy, Inc. core libraries for angular js.
 ## Getting Started
 Via bower,
 
-  `bower install neosavvy-javascript-angular-core`
+    bower install neosavvy-javascript-angular-core
 
-#Development Version,
+###Development Version,
 
 Install all through npm,
 
@@ -34,6 +34,17 @@ To compile source code,
 To run unit tests while developing,
 
     grunt karma:unit
+
+## Modules
+
+    neosavvy.angularcore.analytics
+    neosavvy.angularcore.controllers
+    neosavvy.angularcore.directives
+    neosavvy.angularcore.filters
+    neosavvy.angularcore.services
+
+    //As a collection in
+    window.Neosavvy.AngularCore.Dependencies
 
 
 ## Notes on nsModal
