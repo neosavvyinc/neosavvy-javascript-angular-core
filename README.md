@@ -286,6 +286,32 @@ $scope.page = 0;;
 <label ng-repeat="myCollection | nsCollectionPage : page : 50"></label>
 ```
 
+### Logical
+
+Filter a ternary statement,
+
+```HTML
+<a ng-class="myScopeVar | nsLogicalIf : 'my-class-true' : 'my-class-false'"></a>
+```
+
+### Numeric
+
+Clamp numbers between min or max,
+
+```HTML
+<!-- Min at 5, Max at 25 -->
+<a ng-bind="myNumberOnScope | nsNumericClamp : 5 : 25"></a>
+```
+
+## Text
+
+Clear out certain words,
+
+```HTML
+<!-- Min at 5, Max at 25 -->
+<p ng-bind="message | nsTextReplace : 'government' : 'shutdown' : 'redacted'"></p>
+```
+
 
 ## Notes on nsModal
 Required styles for nsModal are available in ```src/main/resources/styles/scss/modals.scss```.
