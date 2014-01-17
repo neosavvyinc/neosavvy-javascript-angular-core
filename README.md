@@ -118,7 +118,9 @@ Access controllers created in the dom at runtime, by name, by DOM id, by scope, 
 
 Inline html from the server,
 
+    ```JavaScript
     <ns-inline-html value="myScopeValue"></ns-inline-html>
+    ```
 
 
 Modal with open handler and optional close handler, closes on route change,
