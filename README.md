@@ -273,6 +273,19 @@ $scope.wantedCity = "Oma";
 <label ng-repeat="myCollection | nsCollectionFilterPropertyContains : 'city.name' : wantedCity"></label>
 ```
 
+Pagination filter,
+
+```JavaScript
+$scope.myCollection = [ ... ];
+
+$scope.page = 0;;
+```
+
+```HTML
+<!-- Will show paginated date, can be incremented via controller -->
+<label ng-repeat="myCollection | nsCollectionPage : page : 50"></label>
+```
+
 
 ## Notes on nsModal
 Required styles for nsModal are available in ```src/main/resources/styles/scss/modals.scss```.
