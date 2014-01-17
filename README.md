@@ -6,7 +6,7 @@ Neosavvy, Inc. core libraries for angular js.
 ## Getting Started
 Via bower,
 
-  'bower install neosavvy-javascript-angular-core'
+  `bower install neosavvy-javascript-angular-core`
 
 
 ## Notes on nsModal
