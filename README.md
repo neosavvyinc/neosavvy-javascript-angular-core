@@ -367,7 +367,6 @@ nsServiceExtensions.jqRequest({
 
 ```
 
-
 Service extension interface to make a native xhr and Q request (no lifecycle, efficient),
 
 ```JavaScript
@@ -389,13 +388,32 @@ nsServiceExtensions.xhr({
 
 ```
 
+Modal service for opening modals on demand,
 
-## Notes on nsModal
+```JavaScript
+var nsModal = $injector.get('nsModal');
+var myCloseCallback = function() { ... };
+
+//Open With String
+nsModal.open($scope, '<div><label>Some Content</label></div>', myCloseCallback);
+
+//Open With Template
+nsModal.open($scope, 'path/to/template.html', myCloseCallback);
+
+//Will close whenever you need
+$scope.close
+
+```
+
 Required styles for nsModal are available in ```src/main/resources/styles/scss/modals.scss```.
 In order for nsModal to work properly, you must included the compiled CSS from this file in
 your application.
 
-### 0.1.6 - 01/17/2014
+
+Thank you for use, forks, and pull requests.
+
+
+### 0.1.7 - 01/17/2014
 
 Initial release.
 
