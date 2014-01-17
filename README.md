@@ -48,6 +48,49 @@ To run unit tests while developing,
 
     Neosavvy.AngularCore.Dependencies = ['neosavvy.angularcore.analytics', 'neosavvy.angularcore.controllers', 'neosavvy.angularcore.directives', 'neosavvy.angularcore.filters', 'neosavvy.angularcore.services'];
 
+## neosavvy.angularcore.analytics
+
+Define your global analytics callback with the provider at config time,
+
+    angular.module('app')
+        .config(['nsAnalyticsProvider', function (nsAnalyticsProvider) {
+
+            //Provider Setup
+            nsAnalyticsProvider.config({
+                callBack: function(name, options) {
+                    mixpanel.track(name, options);
+                    omniture.track(name, options);
+                }
+            });
+        }]);
+
+
+Define controller analytics at runtime,
+
+    angular.module('app')
+        .run(['nsAnalytics', function (nsAnalytics) {
+
+                //Controllers
+                nsAnalytics('ElectionCtrl', {
+                    countVote: {
+                        name: "VOTE",
+                        options : {
+                            musician: "{{$scope.lastVote}}"
+                        }
+                    }
+                });
+
+                nsAnalytics('ProfileCtrl', {
+                    pushComment: {
+                        name: "COMMENT",
+                        options: {
+                            musician: "{{$scope.musician.name}}",
+                            comments: "{{$scope.musician.comments.length}}"
+                        }
+                    }
+                });
+
+            }]);
 
 
 ## Notes on nsModal
