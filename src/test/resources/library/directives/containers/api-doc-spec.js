@@ -70,12 +70,38 @@ ddescribe("nsApiDoc", function () {
         it("Should list out the payload, stringified", function () {
             expect(el.find('.payload').text()).toEqual(JSON.stringify($scope.myEndpoint.payload));
         });
+
+        it("Should call $http", function () {
+            expect($http).toHaveBeenCalledWith({
+                method: 'POST',
+                url: "/neosavvyapi/readings/create?food=Cheese&q=someRandomQuery",
+                data: JSON.stringify($scope.myEndpoint.payload, undefined, 4)
+            });
+        });
+
+        it("Should set the response property on the endpoint to a stringified version of the response", function () {
+            expect($scope.myEndpoint.response).toEqual(JSON.stringify({name: 'Api Response Valid!'}, undefined, 4));
+        });
+
+        it("Should set the endpoint.status value to Ok", function () {
+            expect($scope.myEndpoint.status).toEqual('Ok');
+        });
+
+        it("Should de-register the watch, so future endpoint changes don't change anything", function () {
+            $scope.myEndpoint.somethingToChange = true;
+            $scope.$digest();
+
+            //This validates that function was never called again
+            expect($http.callCount).toEqual(1);
+        });
     });
 
     describe("fail case", function () {
         beforeEach(function () {
             module.apply(module, Neosavvy.AngularCore.Dependencies.concat(function ($provide) {
-                $http = jasmine.createSpy('$http').andReturn();
+                $http = jasmine.createSpy('$http').andReturn({then: function (fn, fnB) {
+                    fnB('This is a failure');
+                }});
                 $provide.value('$http', $http);
             }));
 
@@ -109,6 +135,14 @@ ddescribe("nsApiDoc", function () {
 
         afterEach(function () {
             $body.empty();
+        });
+
+        it("Should set the endpoint status to failure", function () {
+            expect($scope.myEndpoint.status).toEqual('Failure');
+        });
+
+        it("Should set the endpoint response to the error response", function () {
+            expect($scope.myEndpoint.response).toEqual('This is a failure');
         });
     });
 });

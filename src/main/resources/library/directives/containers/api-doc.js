@@ -11,6 +11,7 @@ Neosavvy.AngularCore.Documentation.directive('nsApiDoc',
                 link: function (scope, elem, attrs) {
                     var d = scope.$watch('endpoint', function (val) {
                         if (val) {
+                            var hpGet = Neosavvy.Core.Utils.MapUtils.highPerformanceGet;
                             scope.path = scope.endpoint.path;
                             scope.method = scope.endpoint.method;
                             scope.params = scope.endpoint.params;
@@ -25,18 +26,18 @@ Neosavvy.AngularCore.Documentation.directive('nsApiDoc',
                             }
 
                             $http({method: scope.method, url: urlBuilder.build(), data: scope.payload}).then(function (resp) {
-                                scope.response = JSON.stringify(resp.data, undefined, 4);
+                                scope.response = JSON.stringify(hpGet(resp, attrs.responseKey), undefined, 4);
                                 scope.endpoint.response = scope.response;
 
-                                scope.status = 'ok';
+                                scope.endpoint.status = 'Ok';
 
                                 if (scope.response) {
                                     d();
                                 }
 
-                                return resp.data;
-                            }, function (message, statusCode) {
-                                scope.status = statusCode;
+                            }, function (response) {
+                                scope.endpoint.status = 'Failure';
+                                scope.endpoint.response = response;
                             });
                         }
                     }, true);
