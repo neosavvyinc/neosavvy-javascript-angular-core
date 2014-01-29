@@ -8,7 +8,7 @@ ddescribe("nsApiDoc", function () {
             '<label class="path" ng-bind="myEndpoint.path"></label>' +
             '<label class="method" ng-bind="myEndpoint.method"></label>' +
             '<label class="param" ng-repeat="(key, value) in myEndpoint.params">{{key + ": " + value}}</label>' +
-            '<p ng-bind="myEndpoint.payload"></p>' +
+            '<p class="payload" ng-bind="myEndpoint.payload | nsStringify"></p>' +
             '</ns-api-doc>';
 
     describe("valid case", function () {
@@ -65,6 +65,10 @@ ddescribe("nsApiDoc", function () {
             expect(el.find('.param').length).toEqual(2);
             expect($(el.find('.param')[0]).text()).toEqual("food: Cheese");
             expect($(el.find('.param')[1]).text()).toEqual("q: someRandomQuery");
+        });
+
+        it("Should list out the payload, stringified", function () {
+            expect(el.find('.payload').text()).toEqual(JSON.stringify($scope.myEndpoint.payload));
         });
     });
 
