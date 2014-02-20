@@ -319,6 +319,14 @@ Programatic truncate,
 <p ng-bind="message | nsTruncate : 55"></p>
 ```
 
+Markdown, converts markdown text to html, using Showdown,
+
+```JavaScript
+$filter('nsTextMarkdown')('#This is a heading');
+
+'<h1 id="thisisaheading">This is a heading</h1>'
+```
+
 
 ## neosavvy.angularcore.services
 
