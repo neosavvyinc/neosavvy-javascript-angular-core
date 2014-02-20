@@ -16,6 +16,7 @@ module.exports = function(config) {
         files: [
             'src/main/resources/lib/lodash/lodash.compat.js',
             'src/main/resources/lib/jquery/jquery.js',
+            'src/main/resources/lib/showdown/src/showdown.js',
             'src/main/resources/lib/q/q.js',
             'src/main/resources/lib/node-uuid/uuid.js',
             'src/main/resources/lib/neosavvy-javascript-core/neosavvy-javascript-core.js',
@@ -75,7 +76,7 @@ module.exports = function(config) {
         // - Safari (only Mac)
         // - PhantomJS
         // - IE (only Windows)
-        browsers: ['Chrome'],
+        browsers: ['PhantomJS'],
 
 
         // If browser does not capture in given timeout [ms], kill it

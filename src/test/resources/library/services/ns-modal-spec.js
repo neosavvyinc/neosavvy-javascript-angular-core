@@ -31,7 +31,7 @@ describe('nsModal service', function () {
         it('should accept 3 parameters', function () {
             var openToString = nsModal.open.toString();
             var regex = /function.*?\(([\s\S]*?)\)/;
-            var params = openToString.match(regex)[1].split(',');
+            var params = openToString.match(regex)[1].split(', ');
 
             expect(params.length).toEqual(3);
             expect(params[0]).toEqual('scope');
