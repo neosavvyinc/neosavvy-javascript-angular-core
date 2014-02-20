@@ -14,9 +14,11 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser
         files: [
+            'src/test/lib/**/*.js',
             'src/main/resources/lib/lodash/lodash.compat.js',
             'src/main/resources/lib/jquery/jquery.js',
             'src/main/resources/lib/showdown/src/showdown.js',
+            'src/main/resources/lib/momentjs/moment.js',
             'src/main/resources/lib/q/q.js',
             'src/main/resources/lib/node-uuid/uuid.js',
             'src/main/resources/lib/neosavvy-javascript-core/neosavvy-javascript-core.js',

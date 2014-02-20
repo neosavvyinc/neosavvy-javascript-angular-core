@@ -303,7 +303,7 @@ Clamp numbers between min or max,
 <a ng-bind="myNumberOnScope | nsNumericClamp : 5 : 25"></a>
 ```
 
-## Text
+### Text
 
 Clear out certain words,
 
@@ -325,6 +325,24 @@ Markdown, converts markdown text to html, using Showdown,
 $filter('nsTextMarkdown')('#This is a heading');
 
 '<h1 id="thisisaheading">This is a heading</h1>'
+```
+
+### Date
+
+Convert time from epoch timestamps to date formats,
+
+```HTML
+<label ng-bind="1392913088 | nsDateUnixToFormat : 'dddd, MMMM Do YYYY, h:mm:ss a'"></label>
+
+<!-- Outputs label as: Thursday, February 20th 2014, 11:18:23 pm -->
+```
+
+Convert date formats to epoch time,
+
+```JavaScript
+$filter('nsDateFormatToUnix')('2010/01/15');
+
+1263531600
 ```
 
 
