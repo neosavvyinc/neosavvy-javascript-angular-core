@@ -9,6 +9,11 @@ then
 fi
 
 grunt
+
+#Tag the development repo
+git tag $TAG
+git push --tags
+
 cp target/*.js ../bower-neosavvy-javascript-angular-core
 cp bower.json ../bower-neosavvy-javascript-angular-core
 cp README.md ../bower-neosavvy-javascript-angular-core
