@@ -428,6 +428,24 @@ nsServiceExtensions.xhr({
 
 ```
 
+Loading indicator that resolves on a promise,
+
+```JavaScript
+var deferred = $q.defer();
+
+nsLoadingStatusService.wrapService(deferred.promise, 'myIndicator')
+
+nsLoadingStatusService.registeredIndicators.myIndicator
+
+true
+
+deferred.resolve('Some Value');
+
+nsLoadingStatusService.registeredIndicators.myIndicator
+
+false
+```
+
 Modal service for opening modals on demand,
 
 ```JavaScript

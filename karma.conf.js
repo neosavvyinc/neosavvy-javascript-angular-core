@@ -16,6 +16,7 @@ module.exports = function(config) {
         files: [
             'src/test/lib/**/*.js',
             'src/main/resources/lib/lodash/lodash.compat.js',
+            'src/main/resources/lib/underscore.string/dist/underscore.string.min.js',
             'src/main/resources/lib/jquery/jquery.js',
             'src/main/resources/lib/showdown/src/showdown.js',
             'src/main/resources/lib/momentjs/moment.js',
