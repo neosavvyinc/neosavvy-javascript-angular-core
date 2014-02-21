@@ -10,7 +10,7 @@ Neosavvy.AngularCore.Filters.filter('nsDateFormatToUnix', function () {
         if (!Neosavvy.Core.Utils.StringUtils.isBlank(val) && val.isValid()) {
             return val.unix();
         } else {
-            throw "You have passed invalid input to hbDateFormatToUnix filter";
+            throw "You have passed invalid input to nsDateFormatToUnix filter";
         }
 
 

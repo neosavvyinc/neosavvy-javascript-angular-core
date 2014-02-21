@@ -217,6 +217,20 @@ Only require input when shown,
 <input ns-required-if-shown ng-show="true">
 ```
 
+Add scope based hooks for events,
+
+```HTML
+<!-- Default to click -->
+<button ns-analytics-hook="particularButtonWasClicked">
+
+<!-- Can specify any event -->
+<input ns-analytics-hook="particularInputKeyUp, keyup">
+
+<!-- Can specify arguments for hook -->
+<input ng-model="myModel.name"
+  ns-analytics-hook="particularInputKeyUp, keyup, myModel.name">
+```
+
 
 ## neosavvy.angularcore.filters
 
