@@ -471,7 +471,7 @@ your application.
 Thank you for use, forks, and pull requests.
 
 
-### 0.1.9 - 01/17/2014
+### 0.2.0 - 02/21/2014
 
 Initial release.
 
