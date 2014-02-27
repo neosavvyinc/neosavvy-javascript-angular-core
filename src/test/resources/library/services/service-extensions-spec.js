@@ -299,7 +299,7 @@ describe("nsServiceExtensions", function () {
             expect(promise).toEqual("This is a $promise!");
         });
 
-        describe("ajax", function () {
+        ddescribe("ajax", function () {
             var jqAjax = $.ajax, ajaxSpy, doneSpy, failSpy, response;
             beforeEach(function() {
                 doneSpy = jasmine.createSpy();
@@ -314,11 +314,12 @@ describe("nsServiceExtensions", function () {
                         {name: "Clark"}
                     ];
                     ajaxSpy = spyOn($, "ajax").andReturn({done: function (fn) {
-                        fn(response);
+                        fn(response, 200);
                         doneSpy();
                         return {fail: failSpy};
                     },
-                        responseText: JSON.stringify(response)
+                        responseText: JSON.stringify(response),
+                        getAllResponseHeaders: jasmine.createSpy()
                     });
                 });
 
@@ -364,6 +365,12 @@ describe("nsServiceExtensions", function () {
                     extensions.jqRequest({method: "GET", url: "http://api.github.com", data: {food: "Fish"}, ajax: {url: "http://www.neosavvy.com", crossDomain: false}});
                     expect(ajaxSpy).toHaveBeenCalledWith({type: "GET", url:"http://www.neosavvy.com", data: {food: "Fish"}, crossDomain: false});
                 });
+
+                it("Should attempt to cache the values of returned get requests", function () {
+                    cacheSpy.get = cacheSpy.get.andReturn(null);
+                    extensions.jqRequest({method: 'GET', url: 'http://www.neosavvy.co.uk', cache: cacheSpy});
+                    expect(cacheSpy.put).toHaveBeenCalledWith('http://www.neosavvy.co.uk', [200, JSON.stringify([{"name":"Tom"}, {"name":"Jerry"}, {"name":"Clark"}]), {}]);
+                });
             });
 
             describe("ajax fail", function () {
@@ -371,7 +378,8 @@ describe("nsServiceExtensions", function () {
                     ajaxSpy = spyOn($, "ajax").andReturn({done: doneSpy.andReturn({fail: function (fn) {
                         fn("There has been an error!");
                         failSpy();
-                    }})});
+                    }}),
+                    getAllResponseHeaders: jasmine.createSpy()});
                 });
 
                 it("Should call ajax with the params in jq format", function () {
@@ -415,7 +423,8 @@ describe("nsServiceExtensions", function () {
                             doneSpy();
                             return {fail: failSpy};
                         },
-                            responseJSON: response
+                            responseJSON: response,
+                            getAllResponseHeaders: jasmine.createSpy()
                         });
                     });
 

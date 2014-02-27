@@ -190,7 +190,7 @@ Neosavvy.AngularCore.Services.factory('nsServiceExtensions',
                     var cached = getFromCache(params);
                     if (cached) {
                         //cached[0] is status, cached[1] is response, cached[2] is headers
-                        deferred.resolve(cached[1]);
+                        deferred.resolve(params.transformResponse ? params.transformResponse(cached[1]) : cached[1]);
                     } else {
                         var request = {type: params.method, url: params.url};
                         if (params.data) {
@@ -200,7 +200,8 @@ Neosavvy.AngularCore.Services.factory('nsServiceExtensions',
                             request = _.merge(request, params.ajax);
                         }
                         var jqXhr = $.ajax(request);
-                        jqXhr.done(function (data) {
+                        jqXhr.done(function (data, textStatus) {
+                                storeInCache(params, textStatus, jqXhr.responseText, jqXhr.getAllResponseHeaders());
                                 if (params.transformResponse) {
                                     //responseJSON for IE9 compatibility
                                     data = params.transformResponse(
