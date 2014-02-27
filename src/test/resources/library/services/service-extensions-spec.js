@@ -299,7 +299,7 @@ describe("nsServiceExtensions", function () {
             expect(promise).toEqual("This is a $promise!");
         });
 
-        ddescribe("ajax", function () {
+        describe("ajax", function () {
             var jqAjax = $.ajax, ajaxSpy, doneSpy, failSpy, response;
             beforeEach(function() {
                 doneSpy = jasmine.createSpy();
