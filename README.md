@@ -217,6 +217,20 @@ Only require input when shown,
 <input ns-required-if-shown ng-show="true">
 ```
 
+Add scope based hooks for events,
+
+```HTML
+<!-- Default to click -->
+<button ns-analytics-hook="particularButtonWasClicked">
+
+<!-- Can specify any event -->
+<input ns-analytics-hook="particularInputKeyUp, keyup">
+
+<!-- Can specify arguments for hook -->
+<input ng-model="myModel.name"
+  ns-analytics-hook="particularInputKeyUp, keyup, myModel.name">
+```
+
 
 ## neosavvy.angularcore.filters
 
@@ -303,7 +317,7 @@ Clamp numbers between min or max,
 <a ng-bind="myNumberOnScope | nsNumericClamp : 5 : 25"></a>
 ```
 
-## Text
+### Text
 
 Clear out certain words,
 
@@ -317,6 +331,32 @@ Programatic truncate,
 ```HTML
 <!-- Will show 55 characters + '...' -->
 <p ng-bind="message | nsTruncate : 55"></p>
+```
+
+Markdown, converts markdown text to html, using Showdown,
+
+```JavaScript
+$filter('nsTextMarkdown')('#This is a heading');
+
+'<h1 id="thisisaheading">This is a heading</h1>'
+```
+
+### Date
+
+Convert time from epoch timestamps to date formats,
+
+```HTML
+<label ng-bind="1392913088 | nsDateUnixToFormat : 'dddd, MMMM Do YYYY, h:mm:ss a'"></label>
+
+<!-- Outputs label as: Thursday, February 20th 2014, 11:18:23 pm -->
+```
+
+Convert date formats to epoch time,
+
+```JavaScript
+$filter('nsDateFormatToUnix')('2010/01/15');
+
+1263531600
 ```
 
 
@@ -388,6 +428,24 @@ nsServiceExtensions.xhr({
 
 ```
 
+Loading indicator that resolves on a promise,
+
+```JavaScript
+var deferred = $q.defer();
+
+nsLoadingStatusService.wrapService(deferred.promise, 'myIndicator')
+
+nsLoadingStatusService.registeredIndicators.myIndicator
+
+true
+
+deferred.resolve('Some Value');
+
+nsLoadingStatusService.registeredIndicators.myIndicator
+
+false
+```
+
 Modal service for opening modals on demand,
 
 ```JavaScript
@@ -413,7 +471,7 @@ your application.
 Thank you for use, forks, and pull requests.
 
 
-### 0.1.9 - 01/17/2014
+### 0.2.0 - 02/21/2014
 
 Initial release.
 

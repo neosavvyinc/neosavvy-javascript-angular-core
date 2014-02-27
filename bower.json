@@ -1,6 +1,6 @@
 {
     "name": "neosavvy-javascript-angular-core-development",
-    "version": "0.1.9",
+    "version": "0.2.0",
     "authors": [
         "Neosavvy, Inc."
     ],
@@ -28,6 +28,8 @@
         "angular": "1.2.4",
         "angular-route": "1.2.4",
         "angular-cache": "1.2.0",
+        "showdown": "0.3.1",
+        "momentjs": "2.2.1",
         "neosavvy-javascript-core": "0.0.9"
     },
     "devDependencies": {
