@@ -2,8 +2,10 @@ Neosavvy.AngularCore.Directives.directive('nsModal', [
     'nsModal',
     function (nsModalService) {
 
+        // TO DO
+        // make tooltip position customizable
         function positionTooltip (e, element) {
-            var localX = 0.15 * e.currentTarget.clientWidth;
+            var localX = -0.75 * e.currentTarget.clientWidth;
             var localY = 0.65 * e.currentTarget.clientHeight;
             var containerCoords = $(e.target).offset();
             var xPos = localX + containerCoords.left;
