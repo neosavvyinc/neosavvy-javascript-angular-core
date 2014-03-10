@@ -76,11 +76,14 @@ describe('nsModal directive', function () {
     });
 
     describe('nsModalCtrl#isTooltip', function () {
-        var elementSpy;
+        var scope,
+            elementSpy;
 
         beforeEach(function () {
             scope = $rootScope.$new();
+            template = angular.element('<ns-modal tooltip="true" open="openHandler" close="closeHandler">myModal</ns-modal>') 
             controller = $controller('nsModalCtrl', { $scope: scope });
+            $compile(template)(scope);
             scope.$apply();
 
             elementSpy = {
@@ -98,6 +101,11 @@ describe('nsModal directive', function () {
         it('should return the positioned element', function () {
             var res = controller.positionTooltip(undefined, elementSpy);
             expect(res).toEqual(elementSpy);
+        });
+
+        it('should call positionTooltip if tooltip is true', function () {
+            scope.openHandler();
+            expect(serviceMock.open.mostRecentCall.args[1].css('position')).toEqual('absolute');
         });
     });
     
