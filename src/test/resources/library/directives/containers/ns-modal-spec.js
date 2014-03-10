@@ -1,6 +1,8 @@
 describe('nsModal directive', function () {
     var $rootScope,
         $compile,
+        $controller,
+        controller,
         nsModal,
         serviceMock;
 
@@ -17,9 +19,10 @@ describe('nsModal directive', function () {
             $provide.value('nsModal', serviceMock);
         });
 
-        inject(function (_$rootScope_, _$compile_) {
+        inject(function (_$rootScope_, _$compile_, _$controller_) {
             $rootScope = _$rootScope_;
             $compile = _$compile_; 
+            $controller = _$controller_;
         });
 
         for (var name in serviceMock) {
@@ -72,23 +75,29 @@ describe('nsModal directive', function () {
         });
     });
 
-    describe('isTooltip', function () {
-        var scope,
-            template;
+    describe('nsModalCtrl#isTooltip', function () {
+        var elementSpy;
 
         beforeEach(function () {
             scope = $rootScope.$new();
-            template = angular.element('<ns-modal open="openHandler" close="closeHandler" is-tooltip="true">myModal</ns-modal>') 
-            $compile(template)(scope);
+            controller = $controller('nsModalCtrl', { $scope: scope });
             scope.$apply();
+
+            elementSpy = {
+                css: jasmine.createSpy('css spy')
+            };
         });
 
-        iit('should position the tooltip', function () {
-            spyOn(element, 'css');
-            scope.openHandler();
-            expect(element.css).toHaveBeenCalledWith('position', 'absolute');
-            expect(element.css).toHaveBeenCalledWith('top', jasmine.any(Number));
-            expect(element.css).toHaveBeenCalledWith('left', jasmine.any(Number));
+        it('should set css position, top, and left properties of the tooltip', function () {
+            controller.positionTooltip(undefined, elementSpy)
+            expect(elementSpy.css).toHaveBeenCalledWith('position', 'absolute');
+            expect(elementSpy.css).toHaveBeenCalledWith('top', undefined);
+            expect(elementSpy.css).toHaveBeenCalledWith('left', undefined);
+        });
+
+        it('should return the positioned element', function () {
+            var res = controller.positionTooltip(undefined, elementSpy);
+            expect(res).toEqual(elementSpy);
         });
     });
     
