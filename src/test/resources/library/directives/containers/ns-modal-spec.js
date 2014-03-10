@@ -72,6 +72,27 @@ describe('nsModal directive', function () {
         });
     });
 
+    describe('isTooltip', function () {
+        var scope,
+            template;
+
+        beforeEach(function () {
+            scope = $rootScope.$new();
+            template = angular.element('<ns-modal open="openHandler" close="closeHandler" is-tooltip="true">myModal</ns-modal>') 
+            $compile(template)(scope);
+            scope.$apply();
+        });
+
+        iit('should position the tooltip', function () {
+            spyOn(element, 'css');
+            scope.openHandler();
+            expect(element.css).toHaveBeenCalledWith('position', 'absolute');
+            expect(element.css).toHaveBeenCalledWith('top', jasmine.any(Number));
+            expect(element.css).toHaveBeenCalledWith('left', jasmine.any(Number));
+        });
+    });
+    
+
     describe('EVENTS', function () {
         var scope,
             template;
