@@ -1,6 +1,8 @@
 describe('nsModal directive', function () {
     var $rootScope,
         $compile,
+        $controller,
+        controller,
         nsModal,
         serviceMock;
 
@@ -17,9 +19,10 @@ describe('nsModal directive', function () {
             $provide.value('nsModal', serviceMock);
         });
 
-        inject(function (_$rootScope_, _$compile_) {
+        inject(function (_$rootScope_, _$compile_, _$controller_) {
             $rootScope = _$rootScope_;
             $compile = _$compile_; 
+            $controller = _$controller_;
         });
 
         for (var name in serviceMock) {
@@ -71,6 +74,41 @@ describe('nsModal directive', function () {
             expect(serviceMock.close).toHaveBeenCalled();
         });
     });
+
+    describe('nsModalCtrl#isTooltip', function () {
+        var scope,
+            elementSpy;
+
+        beforeEach(function () {
+            scope = $rootScope.$new();
+            template = angular.element('<ns-modal tooltip="true" open="openHandler" close="closeHandler">myModal</ns-modal>') 
+            controller = $controller('nsModalCtrl', { $scope: scope });
+            $compile(template)(scope);
+            scope.$apply();
+
+            elementSpy = {
+                css: jasmine.createSpy('css spy')
+            };
+        });
+
+        it('should set css position, top, and left properties of the tooltip', function () {
+            controller.positionTooltip(undefined, elementSpy)
+            expect(elementSpy.css).toHaveBeenCalledWith('position', 'absolute');
+            expect(elementSpy.css).toHaveBeenCalledWith('top', undefined);
+            expect(elementSpy.css).toHaveBeenCalledWith('left', undefined);
+        });
+
+        it('should return the positioned element', function () {
+            var res = controller.positionTooltip(undefined, elementSpy);
+            expect(res).toEqual(elementSpy);
+        });
+
+        it('should call positionTooltip if tooltip is true', function () {
+            scope.openHandler();
+            expect(serviceMock.open.mostRecentCall.args[1].css('position')).toEqual('absolute');
+        });
+    });
+    
 
     describe('EVENTS', function () {
         var scope,
