@@ -371,6 +371,11 @@ describe("nsServiceExtensions", function () {
                     extensions.jqRequest({method: 'GET', url: 'http://www.neosavvy.co.uk', cache: cacheSpy});
                     expect(cacheSpy.put).toHaveBeenCalledWith('http://www.neosavvy.co.uk', [200, JSON.stringify([{"name":"Tom"}, {"name":"Jerry"}, {"name":"Clark"}]), {}]);
                 });
+
+                it("Should set the csrftoken header in the request when options.csrftoken is set to a value", function () {
+                    extensions.jqRequest({method: "GET", url: "http://api.github.com", data: {food: "Fish"}, ajax: {url: "http://www.neosavvy.com", crossDomain: false}, csrfToken:"adamsToken"});
+                    expect(ajaxSpy).toHaveBeenCalledWith({type: "GET", url:"http://www.neosavvy.com", data: {food: "Fish"}, crossDomain: false});
+                });
             });
 
             describe("ajax fail", function () {
