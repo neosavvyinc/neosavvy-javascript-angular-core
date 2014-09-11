@@ -58,6 +58,8 @@ Neosavvy.AngularCore.Dependencies = [
 
 ## neosavvy.angularcore.analytics
 
+###(deprecated in 0.2.4)
+
 Define your global analytics callback with the provider at config time,
 
 ```JavaScript
@@ -106,6 +108,8 @@ angular.module('app')
 
 
 ## neosavvy.angularcore.controllers
+
+###(deprecated in 0.2.4)
 
 Access controllers created in the dom at runtime, by name, by DOM id, by scope, and last,
 
@@ -471,7 +475,7 @@ your application.
 Thank you for use, forks, and pull requests.
 
 
-### 0.2.0 - 02/21/2014
+### 0.2.4 - 02/21/2014
 
 Initial release.
 
